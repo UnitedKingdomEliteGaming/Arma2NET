@@ -29,11 +29,14 @@ namespace TestAddin
 
 		public override string Invoke(string args, int maxResultSize)
 		{
-			if (args.StartsWith("return ", StringComparison.OrdinalIgnoreCase))
-				return args.Substring(args.IndexOf(' ') + 1);
+			if (args != null)
+			{
+				if (args.StartsWith("return ", StringComparison.OrdinalIgnoreCase))
+					return args.Substring(args.IndexOf(' ') + 1);
 
-			if (args.Equals("throw", StringComparison.OrdinalIgnoreCase))
-				throw new Exception("Test");
+				if (args.Equals("throw", StringComparison.OrdinalIgnoreCase))
+					throw new Exception("Test");
+			}
 
 			return "Test";
 		}
