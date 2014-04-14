@@ -27,6 +27,7 @@ namespace Arma2Net
 	{
 	private:
 		initonly Addin^ addin;
+		initonly bool storeResults = false;
 		initonly ConcurrentQueue<String^>^ results = gcnew ConcurrentQueue<String^>;
 		Exception^ exception;
 
@@ -34,7 +35,8 @@ namespace Arma2Net
 		{
 			auto tuple = (Tuple<String^, int>^)obj;
 			auto result = addin->Invoke(tuple->Item1, tuple->Item2);
-			results->Enqueue(result);
+			if (storeResults)
+				results->Enqueue(result);
 		}
 
 		bool HandleException(Exception^ e)
@@ -52,6 +54,12 @@ namespace Arma2Net
 		AsyncAddinInvocationMethod(Addin^ addin)
 		{
 			this->addin = addin;
+		}
+
+		AsyncAddinInvocationMethod(Addin^ addin, bool storeResults)
+		{
+			this->addin = addin;
+			this->storeResults = storeResults;
 		}
 
 		virtual String^ Invoke(String^ args, int maxResultSize)
