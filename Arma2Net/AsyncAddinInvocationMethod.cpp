@@ -56,15 +56,15 @@ namespace Arma2Net
 
 		virtual String^ Invoke(String^ args, int maxResultSize)
 		{
+			if (exception != nullptr)
+			{
+				Exception^ e = exception;
+				exception = nullptr;
+				throw e;
+			}
+
 			if (args != nullptr && args->Equals("getresult", StringComparison::OrdinalIgnoreCase))
 			{
-				if (exception != nullptr)
-				{
-					Exception^ e = exception;
-					exception = nullptr;
-					throw e;
-				}
-					
 				String^ result;
 				results->TryDequeue(result);
 				return result;
