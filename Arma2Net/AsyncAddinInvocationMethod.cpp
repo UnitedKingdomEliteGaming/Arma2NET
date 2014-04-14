@@ -27,8 +27,8 @@ namespace Arma2Net
 	{
 	private:
 		initonly Addin^ addin;
-		initonly bool storeResults = false;
-		initonly ConcurrentQueue<String^>^ results = gcnew ConcurrentQueue<String^>;
+		initonly bool storeResults = true;
+		ConcurrentQueue<String^>^ results = gcnew ConcurrentQueue<String^>;
 		Exception^ exception;
 
 		void InvokeImpl(Object^ obj)
@@ -71,11 +71,19 @@ namespace Arma2Net
 				throw e;
 			}
 
-			if (args != nullptr && args->Equals("getresult", StringComparison::OrdinalIgnoreCase))
+			if (args != nullptr)
 			{
-				String^ result;
-				results->TryDequeue(result);
-				return result;
+				if (args->Equals("getresult", StringComparison::OrdinalIgnoreCase))
+				{
+					String^ result;
+					results->TryDequeue(result);
+					return result;
+				}
+				if (args->Equals("clearresults", StringComparison::OrdinalIgnoreCase))
+				{
+					results = gcnew ConcurrentQueue<String^>;
+					return nullptr;
+				}
 			}
 
 			auto tuple = Tuple::Create(args, maxResultSize);
