@@ -56,6 +56,7 @@
     <ProjectReference Include="..\Arma2Net\Arma2Net.vcxproj">
       <Project>{8d2448b2-b12a-4c5d-b2ee-f6717a6918c9}</Project>
       <Name>Arma2Net</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
