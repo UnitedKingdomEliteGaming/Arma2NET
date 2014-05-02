@@ -53,9 +53,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Arma2Net\Arma2Net.vcxproj">
-      <Project>{8d2448b2-b12a-4c5d-b2ee-f6717a6918c9}</Project>
-      <Name>Arma2Net</Name>
+    <ProjectReference Include="..\Arma2Net.Addins\Arma2Net.Addins.csproj">
+      <Project>{c45fb512-6d36-4bea-ad53-fc29f8ca230b}</Project>
+      <Name>Arma2Net.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

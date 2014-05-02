@@ -82,28 +82,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Addin.cpp" />
-    <ClCompile Include="AddinAttribute.cpp" />
-    <ClCompile Include="AddinManager.cpp" />
-    <ClCompile Include="AsyncAddinInvocationMethod.cpp" />
     <ClCompile Include="Bridge.cpp" />
-    <ClCompile Include="SyncAddinInvocationMethod.cpp" />
     <ClCompile Include="RVExtension.cpp" />
-    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Addin.h" />
-    <ClInclude Include="AddinAttribute.h" />
-    <ClInclude Include="AddinInfo.h" />
-    <ClInclude Include="AddinManager.h" />
     <ClInclude Include="Bridge.h" />
-    <ClInclude Include="IAddinInvocationMethod.h" />
     <ClInclude Include="RVExtension.h" />
-    <ClInclude Include="SyncAddinInvocationMethod.h" />
-    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Arma2Net.Addins\Arma2Net.Addins.csproj">
+      <Project>{c45fb512-6d36-4bea-ad53-fc29f8ca230b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

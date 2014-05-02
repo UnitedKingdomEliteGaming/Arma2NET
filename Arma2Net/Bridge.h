@@ -16,15 +16,12 @@
 
 #pragma once
 
-#include "AddinManager.h"
-
 namespace Arma2Net
 {
 	public ref class Bridge abstract sealed
 	{
 	private:
 		static System::Collections::Generic::Dictionary<System::String^, System::Reflection::Assembly^>^ assemblyCache;
-		static AddinManager^ addinManager;
 		static System::Reflection::Assembly^ ResolveAssembly(System::Object^ sender, System::ResolveEventArgs^ e);
 		static Bridge(void);
 	public:

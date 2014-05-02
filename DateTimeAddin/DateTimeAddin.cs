@@ -15,7 +15,7 @@
 */
 
 using System.Globalization;
-using Arma2Net;
+using Arma2Net.Addins;
 using SDateTime = System.DateTime;
 
 namespace DateTimeAddin

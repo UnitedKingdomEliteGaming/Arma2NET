@@ -1,5 +1,5 @@
-/*
-* Copyright 2013 Arma2NET Developers
+﻿/*
+* Copyright 2014 Arma2NET Developers
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,14 +14,21 @@
 * limitations under the License.
 */
 
-#include "AddinAttribute.h"
+using System;
 
-using namespace System;
-
-namespace Arma2Net
+namespace Arma2Net.Addins
 {
-	AddinAttribute::AddinAttribute(String^ name)
+	[AttributeUsage(AttributeTargets.Class)]
+	public class AddinAttribute : Attribute
 	{
-		Name = name;
+		public string Name { get; set; }
+		public string Version { get; set; }
+		public string Author { get; set; }
+		public string Description { get; set; }
+
+		public AddinAttribute(string name)
+		{
+			Name = name;
+		}
 	}
 }

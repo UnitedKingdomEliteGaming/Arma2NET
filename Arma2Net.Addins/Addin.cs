@@ -1,5 +1,5 @@
-/*
-* Copyright 2013 Arma2NET Developers
+﻿/*
+* Copyright 2014 Arma2NET Developers
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
 * limitations under the License.
 */
 
-#include "Addin.h"
-
-namespace Arma2Net
+namespace Arma2Net.Addins
 {
-	IAddinInvocationMethod^ Addin::InvocationMethod::get(void)
+	public abstract class Addin
 	{
-		return Addin::invocationMethod;
-	}
+		public IAddinInvocationMethod InvocationMethod { get; protected set; }
 
-	void Addin::InvocationMethod::set(IAddinInvocationMethod^ value)
-	{
-		Addin::invocationMethod = value;
+		public Addin()
+		{
+			InvocationMethod = new DefaultAddinInvocationMethod(this);
+		}
+
+		public abstract string Invoke(string args, int maxResultSize);
 	}
 }

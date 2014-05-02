@@ -17,14 +17,13 @@
 #include <Windows.h>
 #include <msclr\marshal.h>
 #include "Bridge.h"
-#include "AddinManager.h"
-#include "Utils.h"
 
 using namespace System;
 using namespace System::Collections::Generic;
 using namespace System::IO;
 using namespace System::Reflection;
 using namespace System::Text;
+using namespace Arma2Net::Addins;
 
 namespace Arma2Net
 {
@@ -78,11 +77,10 @@ namespace Arma2Net
 		assemblyCache = gcnew Dictionary<String^, Assembly^>();
 		AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(ResolveAssembly);
 		AppDomain::CurrentDomain->UnhandledException += gcnew UnhandledExceptionEventHandler(LogUnhandledException);
-		addinManager = gcnew AddinManager();
 		Utils::Log("Loading addins");
 		try
 		{
-			addinManager->LoadAddins();
+			AddinManager::LoadAddins();
 		}
 		catch (Exception^ e)
 		{
@@ -101,7 +99,8 @@ namespace Arma2Net
 	{
 		if (String::IsNullOrEmpty(name))
 			return nullptr;
-		return addinManager->InvokeAddin(name, args, maxResultSize);
+
+		return AddinManager::InvokeAddin(name, args, maxResultSize);
 	}
 
 	void Bridge::InvokeFunction(char* output, int outputSize, const char* function)

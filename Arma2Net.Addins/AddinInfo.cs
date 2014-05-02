@@ -1,5 +1,5 @@
-/*
-* Copyright 2013 Arma2NET Developers
+﻿/*
+* Copyright 2014 Arma2NET Developers
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
 * limitations under the License.
 */
 
-#pragma once
+using System;
 
-namespace Arma2Net
+namespace Arma2Net.Addins
 {
-	[System::AttributeUsageAttribute(System::AttributeTargets::Class)]
-	public ref struct AddinAttribute : public System::Attribute
+	class AddinInfo
 	{
-		property System::String^ Name;
-		property System::String^ Version;
-		property System::String^ Author;
-		property System::String^ Description;
-		AddinAttribute(System::String^ name);
+		internal Type Type;
+		internal AddinAttribute Attribute;
 	};
 }

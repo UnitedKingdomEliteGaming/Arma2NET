@@ -15,7 +15,7 @@
 */
 
 using System;
-using Arma2Net;
+using Arma2Net.Addins;
 
 namespace TestAddin
 {

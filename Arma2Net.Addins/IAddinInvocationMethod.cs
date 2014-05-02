@@ -1,5 +1,5 @@
-/*
-* Copyright 2013 Arma2NET Developers
+﻿/*
+* Copyright 2014 Arma2NET Developers
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
 * limitations under the License.
 */
 
-#pragma once
-
-#include "AddinAttribute.h"
-
-namespace Arma2Net
+namespace Arma2Net.Addins
 {
-	ref class AddinInfo
+	public interface IAddinInvocationMethod
 	{
-	internal:
-		System::Type^ Type;
-		AddinAttribute^ Attribute;
-	};
+		string Invoke(string args, int maxResultSize);
+	}
 }
