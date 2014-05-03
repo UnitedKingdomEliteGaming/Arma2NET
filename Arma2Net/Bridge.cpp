@@ -89,48 +89,13 @@ namespace Arma2Net
 		}
 	}
 
-	static Tuple<String^, String^>^ GetAddinNameAndArgs(String^ str)
-	{
-		auto split = str->Split(gcnew array<wchar_t> { ' ' }, 2);
-		return Tuple::Create(split[0], split->Length > 1 ? split[1] : nullptr);
-	}
-
-	String^ Bridge::InvokeFunction(String^ name, String^ args, int maxResultSize)
-	{
-		if (String::IsNullOrEmpty(name))
-			return nullptr;
-
-		return AddinManager::InvokeAddin(name, args, maxResultSize);
-	}
-
 	void Bridge::InvokeFunction(char* output, int outputSize, const char* function)
 	{
 		auto maxResultSize = outputSize - 1; // reserve last byte
 
-		auto functionString = gcnew String(function);
-
-		auto addinNameAndArgs = GetAddinNameAndArgs(functionString);
-
-		String^ result = nullptr;
-		try
-		{
-			result = Bridge::InvokeFunction(addinNameAndArgs->Item1, addinNameAndArgs->Item2, maxResultSize);
-			if (result == nullptr)
-				return;
-		}
-		catch (Exception^ e)
-		{
-			result = "throw \"" + e->GetType() + "\"";
-			Utils::Log("Failed to invoke function {0}", functionString);
-			Utils::Log(e->ToString());
-		}
-
-		auto byteCount = Encoding::ASCII->GetByteCount(result);
-		if (byteCount > maxResultSize)
-		{
-			result = "throw \"ResultTooLong\"";
-			Utils::Log("Failed to return the result of {0} because it is too long ({0} > {1})", functionString, byteCount, maxResultSize);
-		}
+		auto result = AddinManager::InvokeAddin(gcnew String(function), maxResultSize);
+		if (result == nullptr)
+			return;
 
 		msclr::interop::marshal_context context;
 		strncpy_s(output, outputSize, context.marshal_as<const char*>(result), _TRUNCATE);

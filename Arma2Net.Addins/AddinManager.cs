@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Arma2Net.Addins
 {
@@ -84,8 +85,16 @@ namespace Arma2Net.Addins
 			}
 		}
 
-		public static string InvokeAddin(string name, string args, int maxResultSize)
+		public static string InvokeAddin(string str, int maxResultSize)
 		{
+			if (string.IsNullOrEmpty(str))
+				return null;
+
+			var split = str.Split(new[] { ' ' }, 2);
+
+			var name = split[0];
+			var args = split.Length > 1 ? split[1] : null;
+
 			Addin addin;
 			if (!loadedAddins.TryGetValue(name, out addin))
 				throw new InvalidOperationException(string.Format("Unable to locate addin {0}", name));
@@ -93,7 +102,28 @@ namespace Arma2Net.Addins
 			if (addin.InvocationMethod == null)
 				throw new InvalidOperationException(string.Format("No invocation method object set for addin {0}", name));
 
-			return addin.InvocationMethod.Invoke(args, maxResultSize);
+			string result = null;
+			try
+			{
+				result = addin.InvocationMethod.Invoke(args, maxResultSize);
+				if (result == null)
+					return null;
+			}
+			catch (Exception e)
+			{
+				Utils.Log("Failed to invoke addin {0}", str);
+				Utils.Log(e.ToString());
+				return string.Format("throw \"{0}\"", e.GetType());
+			}
+
+			var resultSize = Encoding.UTF8.GetByteCount(result);
+			if (resultSize > maxResultSize)
+			{
+				Utils.Log("Failed to return a result for addin {0} because it is too long ({0} > {1})", str, resultSize, maxResultSize);
+				return "throw \"ResultTooLong\"";
+			}
+
+			return result;
 		}
 	}
 }
