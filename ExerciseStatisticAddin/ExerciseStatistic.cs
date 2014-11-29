@@ -62,7 +62,9 @@ namespace ExerciseStatisticAddin
                 }
             }
 
-            if (FileManager.WriteExerciseEntry(split[0], split[1], split[2], split[3], split[4], score))
+            string filename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), split[0]);
+
+            if (FileManager.WriteExerciseEntry(filename, split[1], split[2], split[3], split[4], score))
                 return "OK";
             else
                 return "ERROR_FILE";
