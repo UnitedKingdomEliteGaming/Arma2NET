@@ -15,12 +15,13 @@ namespace ExerciseStatisticService
         //static void Main(string[] args)
         static void Main(string[] args)
         {
+#if (!DEBUG)
             #region CurrentDirectory zum Installationspfad verlegen
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = System.IO.Path.GetDirectoryName(path);
             System.IO.Directory.SetCurrentDirectory(path);
             #endregion
-
+#endif
             #region Service installieren/deinstallieren/debuggen
             if (args.Length > 0)
             {

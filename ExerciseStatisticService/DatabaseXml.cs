@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using System.Xml.Serialization;
 using System.IO;
 using System.Xml.Serialization;
 using System.Collections.Generic;
@@ -21,18 +23,22 @@ namespace ExerciseStatisticService
         public float Score;
 
         [XmlElement]
-        public DateTime Date;
+        public string Date;
+
+        public void SetDate(DateTime date)
+        {
+            Date = date.ToString();
+        }
 
         public EntryXml()
         {
-
         }
         public EntryXml(string uid)
         {
             UID = uid;
             Score = float.MaxValue;
             Name = "";
-            Date = DateTime.Now;
+            SetDate(DateTime.Now);
         }
     }
     #endregion
@@ -103,6 +109,7 @@ namespace ExerciseStatisticService
         }              
         
 
+
         [XmlElement]
         public DateTime LastUpdate;
 
@@ -134,11 +141,15 @@ namespace ExerciseStatisticService
         {
             try
             {
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                xmlWriterSettings.Indent = true;
+                xmlWriterSettings.Encoding = System.Text.Encoding.Unicode;
                 XmlSerializer serializer = new XmlSerializer(typeof(DatabaseXml));
-                using (StreamWriter streamWriter = new StreamWriter(_Filename, false, System.Text.Encoding.Unicode))
+                using (XmlWriter xmlWriter = XmlWriter.Create(_Filename, xmlWriterSettings))
                 {
-                    serializer.Serialize(streamWriter, this, null);
-                    streamWriter.Close();
+                    xmlWriter.WriteProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" href=\"" + System.IO.Path.GetFileNameWithoutExtension(_Filename) + ".xsl\"");
+                    serializer.Serialize(xmlWriter, this, null);
+                    xmlWriter.Close();
                 }
             }
             catch(Exception ex)

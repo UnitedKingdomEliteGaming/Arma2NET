@@ -177,7 +177,7 @@ namespace ExerciseStatisticService
                         LOG.Info("New highscore!");
                         entry.Name = username;
                         entry.Score = score;
-                        entry.Date = DateTime.Now;
+                        entry.SetDate(DateTime.Now);
 
                         _Database.LastUpdate = DateTime.Now;
                         _Database.Save();
