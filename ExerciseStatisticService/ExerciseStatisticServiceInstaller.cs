@@ -17,7 +17,7 @@ namespace ExerciseStatisticService
             ServiceInstaller serviceInstaller = new ServiceInstaller();
 
             //set the privileges
-            processInstaller.Account = ServiceAccount.NetworkService;
+            processInstaller.Account = ServiceAccount.LocalSystem;
 
             serviceInstaller.DisplayName = "ExerciseStatisticService";
             serviceInstaller.Description = "Ein Hintergrund Dienst, der eine Textdatei überwacht und dort die Übungsergebnisse von ARMA abfängt. Diese werden in einer XML zwischengespeichert und dann per FTP übertragen.";
