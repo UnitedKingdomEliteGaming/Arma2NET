@@ -9,6 +9,8 @@ namespace PersistentCampaign2Addin
     [Serializable]
     public class TownXml
     {
+        public static readonly string FILENAME = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Towns.xml");
+
         #region public class Town
         [Serializable]
         public class Town

@@ -9,6 +9,8 @@ namespace PersistentCampaign2Addin
     [Serializable]
     public class VehicleXml
     {
+        public readonly string FILENAME = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Vehicles.xml");
+
         #region public class Vehicle
         [Serializable]
         public class Vehicle
@@ -16,7 +18,7 @@ namespace PersistentCampaign2Addin
             public string Classname;
             public string Position;
             public string Orientation;
-            public float Damage;
+            public string Damage;
             public string Content;
 
             public string ToArmaArray()
@@ -88,7 +90,7 @@ namespace PersistentCampaign2Addin
                         vehicle.Classname = split[2];
                         vehicle.Position = split[3];
                         vehicle.Orientation = split[4];
-                        vehicle.Damage = Convert.ToSingle(split[5], System.Globalization.CultureInfo.InvariantCulture);
+                        vehicle.Damage = split[5];
                         vehicle.Content = split[6];
                         _TmpVehicles.Add(vehicle);
 
@@ -97,7 +99,7 @@ namespace PersistentCampaign2Addin
                     catch (Exception ex)
                     {
                         Arma2Net.Utils.Log("ERROR: Vehicle.Write failed: " + ex.Message);
-                        return "ERROR_VEHICLE_WRITE_EXCEPTION";
+                        return "ERROR_VEHICLE_WRITE_EXCEPTION:" + ex.Message;
                     }
                     #endregion
                 }
