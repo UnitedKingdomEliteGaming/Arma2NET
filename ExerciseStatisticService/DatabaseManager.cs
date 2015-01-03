@@ -85,8 +85,10 @@ namespace ExerciseStatisticService
             }
 
             foreach (CategoryXml category in _Database.Categories)
+            {
                 if (category.Name == name)
                     return category;
+            }
 
             CategoryXml appendedCategory = new CategoryXml(name);
             CategoryXml[] categories = new CategoryXml[_Database.Categories.Length + 1];
@@ -151,7 +153,7 @@ namespace ExerciseStatisticService
 
                 if (_Database == null)
                     return;
-
+                
                 LOG.Info("Update Exercise: category:" + category + " exercise:" + exercise + " username:" + username + " userid:" + userid + " score:" + score);
 
                 lock (_Database)
@@ -172,7 +174,7 @@ namespace ExerciseStatisticService
                     EntryXml entry = GetEntry(category, exercise, userid); // Never null
 
                     // Eintrag anpassen
-                    if (entry.Score > score)
+                    if (entry.Score < score)
                     {
                         LOG.Info("New highscore!");
                         entry.Name = username;

@@ -7,7 +7,7 @@ using Arma2Net;
 
 namespace ExerciseStatisticAddin
 {
-    [Addin("ExerciseStatistic", Version = "1.0", Author = "Pixinger", Description = "Hallo")]
+    [Addin("ExerciseStatistic", Version = "1.1", Author = "Pixinger", Description = "for Teamkommando.net")]
     public class ExerciseStatistic : Addin
     {
         public override string Invoke(string args, int maxResultSize)
@@ -63,7 +63,6 @@ namespace ExerciseStatisticAddin
             }
 
             string filename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), split[0]);
-
             if (FileManager.WriteExerciseEntry(filename, split[1], split[2], split[3], split[4], score))
                 return "OK";
             else

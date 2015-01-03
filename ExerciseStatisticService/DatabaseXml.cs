@@ -36,7 +36,7 @@ namespace ExerciseStatisticService
         public EntryXml(string uid)
         {
             UID = uid;
-            Score = float.MaxValue;
+            Score = float.MinValue;
             Name = "";
             SetDate(DateTime.Now);
         }

@@ -39,6 +39,8 @@ namespace ExerciseStatisticService
                 _FileSystemWatcher.Changed += new FileSystemEventHandler(_FileSystemWatcher_Changed);
                 _FileSystemWatcher.Error += new ErrorEventHandler(_FileSystemWatcher_Error);
                 _FileSystemWatcher.EnableRaisingEvents = true;
+
+                ReadAndClearFile(_Filename);
             }
             catch(Exception ex)
             {
@@ -105,7 +107,7 @@ namespace ExerciseStatisticService
                         if (fileStream.Length > 0)
                         {
                             // Erst die Einträge lesen
-                            StreamReader streamReader = new StreamReader(fileStream, System.Text.UTF8Encoding.UTF8);
+                            StreamReader streamReader = new StreamReader(fileStream, System.Text.ASCIIEncoding.ASCII);
                             string text;
                             while ((text = streamReader.ReadLine()) != null)
                             {

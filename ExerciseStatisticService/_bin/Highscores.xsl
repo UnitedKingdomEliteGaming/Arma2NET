@@ -5,10 +5,9 @@
     <xsl:for-each select="DatabaseXml/Category">
 		<table border="1" class="forum" style="width: 90%;" cellpadding="0">
 			<tr>
-				<td class="headb"><xsl:value-of select="Name"/></td>
+				<td class="headb"><xsl:value-of select="Description"/></td>
 			</tr>
 			<tr>
-				<td class="leftc"><xsl:value-of select="Description"/></td>
 			</tr>
 		</table>
 		<br/>
@@ -16,10 +15,7 @@
 		<xsl:for-each select="Exercise">
 			<table border="1" class="forum" style="width: 90%;" cellpadding="0">
 				<tr>
-					<td class="headb" style="text-align:left" colspan="3"><xsl:value-of select="Name"/></td>
-				</tr>
-				<tr>
-					<td class="leftc" style="text-align:left" colspan="3"><xsl:value-of select="Description"/></td>
+					<td class="headb" style="text-align:left" colspan="3"><xsl:value-of select="Description"/></td>
 				</tr>
 		
 				<tr>
@@ -29,7 +25,7 @@
 				</tr>
 
 				<xsl:for-each select="Entry">
-					<xsl:sort select="Score" order="ascending" data-type="number"/>
+					<xsl:sort select="Score" order="descending" data-type="number"/>
 					<tr>
 						<td class="leftb"><xsl:value-of select="Name"/></td>
 						<td class="leftb"><xsl:value-of select="Score"/></td>

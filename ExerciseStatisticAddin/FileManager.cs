@@ -11,17 +11,21 @@ namespace ExerciseStatisticAddin
     {
         public static bool WriteExerciseEntry(string filename, string category, string exercise, string username, string userid, float score)
         {
+
+            string concatenatedText = category + ";" + exercise + ";" + username + ";" + userid + ";" + score.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            Arma2Net.Utils.Log("ExerciseStatisticAddin: " + concatenatedText);
+
             int limit = 1000;
             while (limit > 0)
             {
                 limit--;
                 try
                 {
-                    string concatenatedText = category + ";" + exercise + ";" + username + ";" + userid + ";" + score.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
                     FileInfo fileInfo = new FileInfo(filename);
                     using (FileStream fileStream = fileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     {
-                        StreamWriter sw = new StreamWriter(fileStream, System.Text.UTF8Encoding.UTF8);
+                        //StreamWriter sw = new StreamWriter(fileStream, System.Text.UTF8Encoding.UTF8);
+                        StreamWriter sw = new StreamWriter(fileStream, System.Text.ASCIIEncoding.ASCII);
                         sw.BaseStream.Position = sw.BaseStream.Length;
                         sw.WriteLine(concatenatedText);
                         sw.Flush();
