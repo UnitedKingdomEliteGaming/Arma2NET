@@ -15,21 +15,31 @@
 		<xsl:for-each select="Exercise">
 			<table border="1" class="forum" style="width: 90%;" cellpadding="0">
 				<tr>
-					<td class="headb" style="text-align:left" colspan="3"><xsl:value-of select="Description"/></td>
+					<td class="headb" style="text-align:left" colspan="4"><xsl:value-of select="Description"/></td>
 				</tr>
 		
 				<tr>
-					<td class="leftc" style="text-align:left">Name</td>
-					<td class="leftc" style="text-align:left">Score</td>
+					<td class="leftc" width="400px" style="text-align:left">Name</td>
+					<td class="leftc" width="100px" style="text-align:left">Punkte</td>
 					<td class="leftc" style="text-align:left">Datum</td>
+					<td class="leftc" width="50px" style="text-align:left">Erf.</td>
 				</tr>
 
 				<xsl:for-each select="Entry">
 					<xsl:sort select="Score" order="descending" data-type="number"/>
+					<xsl:sort select="Date" order="ascending" data-type="text"/>
 					<tr>
 						<td class="leftb"><xsl:value-of select="Name"/></td>
 						<td class="leftb"><xsl:value-of select="Score"/></td>
 						<td class="leftb"><xsl:value-of select="Date"/></td>
+						<xsl:choose>
+							<xsl:when test="../Required>Score">
+								<td class="leftb"><img alt="" src="/csv2/symbols/clansphere/red.gif"></img></td>
+							</xsl:when>
+							<xsl:otherwise>
+								<td class="leftb"><img alt="" src="/csv2/symbols/clansphere/green.gif"></img></td>
+							</xsl:otherwise>
+						</xsl:choose>						
 					</tr>
 				</xsl:for-each>
 			
@@ -42,4 +52,3 @@
 	
 </xsl:template>
 </xsl:stylesheet>
-
