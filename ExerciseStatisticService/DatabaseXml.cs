@@ -52,6 +52,9 @@ namespace ExerciseStatisticService
         [XmlElement]
         public string Description;
 
+        [XmlElement]
+        public float Required = 0;
+
         [XmlElement("Entry")]
         public EntryXml[] Entries;
 
@@ -62,7 +65,7 @@ namespace ExerciseStatisticService
         public ExerciseXml(string name)
         {
             Name = name;
-            Description = ".";
+            Description = "Unknown";
         }
     }
     #endregion
@@ -86,7 +89,7 @@ namespace ExerciseStatisticService
         public CategoryXml(string name)
         {
             Name = name;
-            Description = ".";
+            Description = "Unknown";
         }
     }
     #endregion
