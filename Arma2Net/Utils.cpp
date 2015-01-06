@@ -34,9 +34,8 @@ namespace Arma2Net
 	{
 		BaseDirectory = Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location);
 		AddinDirectory = Path::Combine(BaseDirectory, "Addins");
-		LogDirectory = Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Arma2NET");
-
-		Directory::CreateDirectory(Utils::LogDirectory);
+		LogDirectory = Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location); //Path::Combine(Environment::GetFolderPath(Environment::SpecialFolder::LocalApplicationData), "Arma2NET");
+		//Directory::CreateDirectory(Utils::LogDirectory);
 		logWriter = gcnew StreamWriter(Path::Combine(Utils::LogDirectory, "Arma2NET.log"), true);
 	}
 
