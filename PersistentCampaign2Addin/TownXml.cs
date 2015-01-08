@@ -39,11 +39,11 @@ namespace PersistentCampaign2Addin
         {
             if (Towns != null)
                 foreach (Town town in Towns)
-                    if (town.Name.ToLower() == name)
+                    if (town.Name.ToLower() == name.ToLower())
                         return town;
 
             Town newTown = new Town();
-            newTown.Name = name;
+            newTown.Name = name.ToLower();
 
             Arma2Net.Utils.Log("New town added: " + name);
 
@@ -103,7 +103,7 @@ namespace PersistentCampaign2Addin
                         if (split.Length < 11)
                             return "ERROR_TOWN_UPDATE_SPLIT_LENGTH";
 
-                        Update(split[2], split[3], split[4], split[5], split[6], split[7], split[8], split[9], split[10]);
+                        Update(split[2].ToLower(), split[3].ToLower(), split[4].ToLower(), split[5].ToLower(), split[6].ToLower(), split[7].ToLower(), split[8].ToLower(), split[9].ToLower(), split[10].ToLower());
                         return "OK";
                     }
                     catch (Exception ex)
