@@ -24,10 +24,11 @@ namespace PersistentCampaign2Addin
             public float Weapon = 0;
             public float Warlord = 0;
             public float Injured = 10;
+            public float MaxInhabitants = 0;
 
             public string ToArmaArray()
             {
-                return string.Format("[\"{0}\",{1},{2},{3},{4},{5},{6},{7},{8}]", Name, Water, Food, Mood, Civ, Red, Weapon, Warlord, Injured);
+                return string.Format("[\"{0}\",{1},{2},{3},{4},{5},{6},{7},{8},{9}]", Name, Water, Food, Mood, Civ, Red, Weapon, Warlord, Injured, MaxInhabitants);
             }
         }
         #endregion
@@ -57,7 +58,7 @@ namespace PersistentCampaign2Addin
 
             return newTown;
         }
-        private void Update(string name, string water, string food, string mood, string civ, string red, string weapon, string warlord, string injured)
+        private void Update(string name, string water, string food, string mood, string civ, string red, string weapon, string warlord, string injured, string maxInhabitants)
         {
             TownXml.Town town = Find(name);
             town.Water = Convert.ToSingle(water, System.Globalization.CultureInfo.InvariantCulture);
@@ -68,6 +69,7 @@ namespace PersistentCampaign2Addin
             town.Weapon = Convert.ToSingle(weapon, System.Globalization.CultureInfo.InvariantCulture);
             town.Warlord = Convert.ToSingle(warlord, System.Globalization.CultureInfo.InvariantCulture);
             town.Injured = Convert.ToSingle(injured, System.Globalization.CultureInfo.InvariantCulture);
+            town.MaxInhabitants = Convert.ToSingle(maxInhabitants, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public string ArgumentParser(string[] split)
@@ -100,10 +102,10 @@ namespace PersistentCampaign2Addin
                     #region update
                     try
                     {
-                        if (split.Length < 11)
+                        if (split.Length < 12)
                             return "ERROR_TOWN_UPDATE_SPLIT_LENGTH";
 
-                        Update(split[2].ToLower(), split[3].ToLower(), split[4].ToLower(), split[5].ToLower(), split[6].ToLower(), split[7].ToLower(), split[8].ToLower(), split[9].ToLower(), split[10].ToLower());
+                        Update(split[2].ToLower(), split[3].ToLower(), split[4].ToLower(), split[5].ToLower(), split[6].ToLower(), split[7].ToLower(), split[8].ToLower(), split[9].ToLower(), split[10].ToLower(), split[11].ToLower());
                         return "OK";
                     }
                     catch (Exception ex)
