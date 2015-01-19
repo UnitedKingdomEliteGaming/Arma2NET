@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace PersistentCampaign2Addin
 {
@@ -28,7 +29,7 @@ namespace PersistentCampaign2Addin
 
             public string ToArmaArray()
             {
-                return string.Format("[\"{0}\",{1},{2},{3},{4},{5},{6},{7},{8},{9}]", Name, Water, Food, Mood, Civ, Red, Weapon, Warlord, Injured, MaxInhabitants);
+                return string.Format("[\"{0}\",{1},{2},{3},{4},{5},{6},{7},{8},{9}]", Name, Water.ToString(CultureInfo.InvariantCulture), Food.ToString(CultureInfo.InvariantCulture), Mood.ToString(CultureInfo.InvariantCulture), Civ.ToString(CultureInfo.InvariantCulture), Red.ToString(CultureInfo.InvariantCulture), Weapon.ToString(CultureInfo.InvariantCulture), Warlord.ToString(CultureInfo.InvariantCulture), Injured.ToString(CultureInfo.InvariantCulture), MaxInhabitants.ToString(CultureInfo.InvariantCulture));
             }
         }
         #endregion
@@ -138,6 +139,14 @@ namespace PersistentCampaign2Addin
             {
                 Arma2Net.Utils.Log("ERROR: Town-Exception: " + ex.Message);
                 return "ERROR_TOWN_EXCEPTION";
+            }
+        }
+        public void Debug()
+        {
+            if (Towns != null)
+            {
+                foreach (Town t in Towns)
+                    Console.WriteLine(t.ToArmaArray());
             }
         }
     }

@@ -83,6 +83,10 @@ namespace PersistentCampaign2Addin
                     try
                     {
                         _TownXml = XmlTools.Load<TownXml>(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Towns.xml"));
+#if(DEBUG)
+                        _TownXml.Debug();
+#endif
+                      
                         _VehicleXml = XmlTools.Load<VehicleXml>(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Vehicle.xml"));
                         return "OK";
                     }
