@@ -18,14 +18,14 @@
 #include <string>
 #include "..\Arma2Net\RVExtension.h"
 
-#define OUTPUT_SIZE 20000
+#define OUTPUT_SIZE 4096
 
 int main(void)
 {
 	while (true)
 	{
 		std::string functionString;
-		std::cout << "Enter function name: ";
+		std::cout << "Enter function name \"DateTime now\": ";
 		std::getline(std::cin, functionString);
 		if (functionString.length() == 0)
 			continue;

@@ -48,6 +48,9 @@ namespace Arma2Net
 	{
 		try
 		{
+#if (_DEBUG)
+			System::Diagnostics::Debug::WriteLine(message);
+#endif
 			logWriter->WriteLine(DateTime::Now.ToString(CultureInfo::InvariantCulture) + " " + message);
 			logWriter->Flush();
 		}
