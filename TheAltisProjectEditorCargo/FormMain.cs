@@ -18,114 +18,43 @@ namespace TheAltisProjectEditorCargo
         {
             InitializeComponent();
 
+            MsSql.Init();
+
             cmbCargoType.SelectedIndex = 0;
-            RefreshListCargoId();
+            RefreshComboboxTable();
+            cmbTable.SelectedIndex = cmbTable.Items.Count -1;
         }
 
-        private void tbtnReload_Click(object sender, EventArgs e)
+        private string SelectedTable
         {
-            RefreshListCargoId();
-        }
-        private void tbtnDeleteCargoId_Click(object sender, EventArgs e)
-        {
-            if (lstCargoId.SelectedIndex != -1)
+            get
             {
-                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieser cargo id löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    MsSql.DeleteCargoId((lstCargoId.SelectedItem as MsSql.IdStringPair).Text);
-                    RefreshListCargoId();
-                }
+                return cmbTable.SelectedItem as string;
             }
         }
-        private void tbtnDeleteCargoType_Click(object sender, EventArgs e)
+        private void RefreshComboboxTable()
         {
-            if ((lstCargoId.SelectedIndex != -1) && (cmbCargoType.Text.Length == 3))
+            cmbTable.SelectedIndex = -1;
+            cmbTable.Text = "";
+            cmbTable.Items.Clear();
+            tbtnDropTable.Enabled = false;
+            string[] tables = MsSql.GetTables();
+            foreach (string table in tables)
             {
-                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieses cargo types löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    MsSql.DeleteCargoType((lstCargoId.SelectedItem as  MsSql.IdStringPair).Text, cmbCargoType.Text);
-                    RefreshListCargoData();
-                }
+                cmbTable.Items.Add(table);
             }
-        }
-        private void tbtnDeleteCargoSingle_Click(object sender, EventArgs e)
-        {
-            if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3) && (lstCargoData.SelectedItem != null))
-            {
-                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieses cargo types löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    MsSql.DeleteCargoSingle((lstCargoData.SelectedItem as MsSql.IdStringPair).Id);
-                    RefreshListCargoData();
-                }
-            }
-        }
-        private void tbtnEdit_Click(object sender, EventArgs e)
-        {
-            Int64 id = -1;
-            string cargoId = "";
-            if (lstCargoId.SelectedItem != null)
-            {
-                id = (lstCargoId.SelectedItem as MsSql.IdStringPair).Id;
-                cargoId = (lstCargoId.SelectedItem as MsSql.IdStringPair).Text;
-            }
-            string cargoType = "";
-            if (cmbCargoType.Text.Length == 3)
-                cargoType = cmbCargoType.Text;
 
-            string cargoData = "";
-            if (lstCargoData.SelectedItem != null)
-                cargoData = (lstCargoData.SelectedItem as MsSql.IdStringPair).Text;
-
-            if (EditDialog.ExecuteDialog(id, cargoId, cargoType, cargoData, false) != "")
-                RefreshListCargoData();
+            cmbTable.SelectedIndex = cmbTable.Items.Count - 1;
         }
-        private void tbtnAdd_Click(object sender, EventArgs e)
-        {
-            Int64 id = -1;
-            string cargoId = "";
-            if (lstCargoId.SelectedItem != null)
-            {
-                id = (lstCargoId.SelectedItem as MsSql.IdStringPair).Id;
-                cargoId = (lstCargoId.SelectedItem as MsSql.IdStringPair).Text;
-            }
-            string cargoType = "";
-            if (cmbCargoType.Text.Length ==3) 
-                cargoType = cmbCargoType.Text;
-
-            string addedCargoId = EditDialog.ExecuteDialog(id, cargoId, cargoType, "", true);
-            if (addedCargoId != "")
-            {
-                if (addedCargoId == cargoId)
-                    RefreshListCargoData();
-                else
-                    RefreshListCargoId();
-            }
-        }
-
-        private void lstCargoId_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RefreshListCargoData();
-
-            tbtnDeleteCargoId.Enabled = (lstCargoId.SelectedIndex != -1);
-        }
-        private void cmbCargoType_TextChanged(object sender, EventArgs e)
-        {
-            tbtnDeleteCargoType.Enabled = cmbCargoType.Text.Length == 3;
-
-            RefreshListCargoData();
-        }
-        private void lstCargoData_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            tbtnEdit.Enabled = lstCargoData.SelectedItem != null;
-            tbtnDeleteCargoSingle.Enabled = lstCargoData.SelectedItem != null;
-        }
-
         private void RefreshListCargoId()
         {
-            MsSql.IdStringPair[] cargoIds = MsSql.GetCargoIds();
+            string[] cargoIds = MsSql.GetCargoIds(SelectedTable);
             lstCargoId.Items.Clear();
-            foreach (MsSql.IdStringPair cargoId in cargoIds)
-                lstCargoId.Items.Add(cargoId);
+            if (cargoIds != null)
+            {
+                foreach (string cargoId in cargoIds)
+                    lstCargoId.Items.Add(cargoId);
+            }
 
             RefreshListCargoData();
         }
@@ -134,11 +63,140 @@ namespace TheAltisProjectEditorCargo
             lstCargoData.Items.Clear();
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3))
             {
-                MsSql.IdStringPair[] cargoDatas = MsSql.GetCargoData((lstCargoId.SelectedItem as MsSql.IdStringPair).Text, cmbCargoType.Text);
+                MsSql.IdStringPair[] cargoDatas = MsSql.GetCargoData(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
                 lstCargoData.Items.Clear();
-                foreach (MsSql.IdStringPair cargoData in cargoDatas)
-                    lstCargoData.Items.Add(cargoData);
+                if (cargoDatas != null)
+                {
+                    foreach (MsSql.IdStringPair cargoData in cargoDatas)
+                        lstCargoData.Items.Add(cargoData);
+                }
+                tbtnDeleteCargoDataType.Enabled = lstCargoData.Items.Count > 0;
             }
+        }
+
+        private void tbtnDropTable_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(SelectedTable))
+            {
+                if (MessageBox.Show("Wollen Sie wirklich den Table " + SelectedTable + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    MsSql.DropTable(SelectedTable);
+                    RefreshComboboxTable();
+                }
+            }
+        }
+        private void tbtnRefreshTable_Click(object sender, EventArgs e)
+        {
+            RefreshComboboxTable();
+        }
+
+        private void tbtnDeleteCargoId_Click(object sender, EventArgs e)
+        {
+            if (lstCargoId.SelectedIndex != -1)
+            {
+                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieser Cargo Id löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    MsSql.DeleteCargoId(SelectedTable, (lstCargoId.SelectedItem as string));
+                    RefreshListCargoId();
+                }
+            }
+        }
+        private void tbtnRefreshCargoId_Click(object sender, EventArgs e)
+        {
+            RefreshListCargoId();
+        }
+
+        private void tbtnEditCargoData_Click(object sender, EventArgs e)
+        {
+            string cargoId = "";
+            if (lstCargoId.SelectedItem != null)
+                cargoId = (lstCargoId.SelectedItem as string);
+            
+            string cargoType = "";
+            if (cmbCargoType.Text.Length == 3)
+                cargoType = cmbCargoType.Text;
+
+            Int64 id = -1;
+            string cargoData = "";
+            if (lstCargoData.SelectedItem != null)
+            {
+                id = (lstCargoData.SelectedItem as MsSql.IdStringPair).Id;
+                cargoData = (lstCargoData.SelectedItem as MsSql.IdStringPair).Text;
+            }
+
+            if (EditDialog.ExecuteDialog_Update(SelectedTable, id, cargoId, cargoType, cargoData) != "")
+                RefreshListCargoData();
+        }
+        private void tbtnAddCargoData_Click(object sender, EventArgs e)
+        {
+            string cargoId = "";
+            if (lstCargoId.SelectedItem != null)
+                cargoId = (lstCargoId.SelectedItem as string);
+            
+            string cargoType = "";
+            if (cmbCargoType.Text.Length ==3) 
+                cargoType = cmbCargoType.Text;
+
+            string addedCargoId = EditDialog.ExecuteDialog_Insert(SelectedTable, cargoId, cargoType);
+            if (addedCargoId != "")
+            {
+                if (addedCargoId == cargoId)
+                    RefreshListCargoData();
+                else
+                    RefreshListCargoId();
+            }
+        }
+        private void tbtnDeleteCargoDataSingle_Click(object sender, EventArgs e)
+        {
+            if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3) && (lstCargoData.SelectedItem != null))
+            {
+                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieses cargo types löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    MsSql.DeleteCargoSingle(SelectedTable, (lstCargoData.SelectedItem as MsSql.IdStringPair).Id);
+                    RefreshListCargoData();
+                }
+            }
+        }
+        private void tbtnDeleteCargoDataType_Click(object sender, EventArgs e)
+        {
+            if ((lstCargoId.SelectedIndex != -1) && (cmbCargoType.Text.Length == 3))
+            {
+                if (MessageBox.Show("Wollen Sie wirklich alle Einträge in der Liste löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    MsSql.DeleteCargoType(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
+                    RefreshListCargoData();
+                }
+            }
+        }
+        private void tbtnRefreshCargoData_Click(object sender, EventArgs e)
+        {
+            RefreshListCargoData();
+        }
+        private void lstCargoData_DoubleClick(object sender, EventArgs e)
+        {
+            tbtnEditCargoData.PerformClick();
+        }
+
+        private void cmbTable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tbtnDropTable.Enabled = cmbTable.SelectedIndex != -1;
+
+            RefreshListCargoId();
+        }
+        private void lstCargoId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshListCargoData();
+
+            tbtnDeleteCargoId.Enabled = (lstCargoId.SelectedIndex != -1);
+        }
+        private void cmbCargoType_TextChanged(object sender, EventArgs e)
+        {
+            RefreshListCargoData();
+        }
+        private void lstCargoData_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tbtnEditCargoData.Enabled = lstCargoData.SelectedItem != null;
+            tbtnDeleteCargoDataSingle.Enabled = lstCargoData.SelectedItem != null;
         }
     }
 }

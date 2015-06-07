@@ -19,17 +19,17 @@ namespace TheAltisProjectAddin
 
                 if (split[1].ToLower() == "select")
                 {
-                    #region cargo|select|boxid|type
+                    #region cargo|select|table|boxid|type
                     try
                     {
-                        if (split.Length < 4)
+                        if (split.Length < 5)
                             return "ERROR_CARGO_SELECT_SPLIT_LENGTH";
 
                         if (_Result != null)
                             return "ERROR_CARGO_SELECT_ACTIVE";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager();
-                        _Result = sql.Select(split[2], split[3]);
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
+                        _Result = sql.Select(split[3], split[4]);
 
                         return "OK";
                     }
@@ -75,14 +75,14 @@ namespace TheAltisProjectAddin
                 }
                 else if (split[1].ToLower() == "insert")
                 {
-                    #region cargo|insert|boxid|type|data
+                    #region cargo|insert|table|boxid|type|data
                     try
                     {
-                        if (split.Length < 5)
+                        if (split.Length < 6)
                             return "ERROR_CARGO_INSERT_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager();
-                        if (!sql.Insert(split[2], split[3], split[4]))
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
+                        if (!sql.Insert(split[3], split[4], split[5]))
                             return "ERROR_CARGO_INSERT";
                         
                         return "OK";
@@ -96,14 +96,14 @@ namespace TheAltisProjectAddin
                 }
                 else if (split[1].ToLower() == "deleteall")
                 {
-                    #region cargo|deleteall|boxid
+                    #region cargo|deleteall|table|boxid
                     try
                     {
-                        if (split.Length < 3)
+                        if (split.Length < 4)
                             return "ERROR_CARGO_DELETEALL_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager();
-                        if (!sql.DeleteAll(split[2].ToLower()))
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
+                        if (!sql.DeleteAll(split[3].ToLower()))
                             return "ERROR_CARGO_DELETEALL";
 
                         return "OK";
@@ -117,14 +117,14 @@ namespace TheAltisProjectAddin
                 }
                 else if (split[1].ToLower() == "deletetype")
                 {
-                    #region cargo|deletetype|boxid|type
+                    #region cargo|deletetype|table|boxid|type
                     try
                     {
-                        if (split.Length < 4)
+                        if (split.Length < 5)
                             return "ERROR_CARGO_DELETETYPE_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager();
-                        if (!sql.DeleteType(split[2],split[3]))
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
+                        if (!sql.DeleteType(split[3],split[4]))
                             return "ERROR_CARGO_DELETETYPE";
 
                         return "OK";
@@ -133,6 +133,27 @@ namespace TheAltisProjectAddin
                     {
                         Arma2Net.Utils.Log("ERROR: CARGO.DeleteType failed: " + ex.Message);
                         return "ERROR_CARGO_DELETETYPE_EXCEPTION";
+                    }
+                    #endregion
+                }
+                else if (split[1].ToLower() == "init")
+                {
+                    #region cargo|init|table
+                    try
+                    {
+                        if (split.Length < 3)
+                            return "ERROR_CARGO_INIT_SPLIT_LENGTH";
+
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2].ToLower());
+                        if (!sql.Initialize())
+                            return "ERROR_CARGO_INIT";
+
+                        return "OK";
+                    }
+                    catch (Exception ex)
+                    {
+                        Arma2Net.Utils.Log("ERROR: Cargo.Init failed: " + ex.Message);
+                        return "ERROR_CARGO_INIT_EXCEPTION";
                     }
                     #endregion
                 }

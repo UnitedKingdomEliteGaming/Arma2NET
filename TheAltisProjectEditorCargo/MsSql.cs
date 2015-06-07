@@ -9,6 +9,7 @@ namespace TheAltisProjectEditorCargo
 {
     class MsSql
     {
+        #region public class IdStringPair
         public class IdStringPair
         {
             public Int64 Id;
@@ -24,32 +25,91 @@ namespace TheAltisProjectEditorCargo
                 return Text;
             }
         }
+        #endregion
 
-        //public const string DatabaseFilename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Database.mdf");
-        public const string DatabaseFilename = @"C:\Program Files (x86)\Steam\SteamApps\common\Arma 3\@Arma2Net\Addins\TheAltisProjectAddin\Database.mdf";
-        public const string ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + DatabaseFilename + ";Integrated Security=True";
+        private static string _ConnectionStringCargo;
+        public static string ConnectionStringCargo
+        {
+            get
+            {
+                return _ConnectionStringCargo;
+            }
+        }
 
-        public static IdStringPair[] GetCargoIds()
+        public static void Init()
+        {
+#if(DEBUG)
+            string filename = @"C:\Program Files (x86)\Steam\SteamApps\common\Arma 3\@Arma2Net\Addins\TheAltisProjectAddin\DatabaseCargo.mdf";
+#else
+            string filename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.mdf");
+#endif
+            _ConnectionStringCargo = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + filename + ";Integrated Security=True";
+        }
+
+        public static string[] GetTables()
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
+                {
+                    sqlConnection.Open();
+                    using (System.Data.DataTable schema = sqlConnection.GetSchema("Tables"))
+                    {
+                        List<string> tables = new List<string>(8);
+                        foreach (System.Data.DataRow row in schema.Rows)
+                            tables.Add(row[2].ToString());
+
+                        return tables.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Exception: " + ex.Message);
+                return null;
+            }
+        }
+        public static bool DropTable(string table)
+        {
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    SqlCommand sqlCommand = new SqlCommand("SELECT DISTINCT CargoId, Id FROM Cargo ORDER BY CargoId DESC;", sqlConnection);
+                    string commandText = string.Format("DROP TABLE {0}", table);
+                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                    {
+                        int result = sqlCommand.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Exception: " + ex.Message);
+                return false;
+            }
+        }
+        public static string[] GetCargoIds(string table)
+        {
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
+                {
+                    sqlConnection.Open();
+
+                    SqlCommand sqlCommand = new SqlCommand("SELECT DISTINCT CargoId FROM " + table + " ORDER BY CargoId DESC;", sqlConnection);
                     using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
                     {
-                        List<IdStringPair> items = new List<IdStringPair>(32);
+                        List<string> items = new List<string>(32);
 
                         while (sqlReader.Read())
                         {
                             if (sqlReader.IsDBNull(0))
                                 return null;
-                            if (sqlReader.IsDBNull(1))
-                                return null;
 
-                            items.Add(new IdStringPair(sqlReader.GetInt64(1), sqlReader.GetString(0)));
+                            items.Add(sqlReader.GetString(0));
                         }
 
                         return items.ToArray();
@@ -62,15 +122,15 @@ namespace TheAltisProjectEditorCargo
                 return null;
             }
         }
-        public static IdStringPair[] GetCargoData(string cargoId, string cargoType)
+        public static IdStringPair[] GetCargoData(string table, string cargoId, string cargoType)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    SqlCommand sqlCommand = new SqlCommand(string.Format("SELECT Id, CargoData FROM Cargo WHERE CargoId='{0}' AND CargoType='{1}';", cargoId, cargoType), sqlConnection);
+                    SqlCommand sqlCommand = new SqlCommand(string.Format("SELECT Id, CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}';", table, cargoId, cargoType), sqlConnection);
                     using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
                     {
                         List<IdStringPair> items = new List<IdStringPair>(32);
@@ -95,15 +155,15 @@ namespace TheAltisProjectEditorCargo
                 return null;
             }
         }
-        public static bool DeleteCargoType(string cargoId, string cargoType)
+        public static bool DeleteCargoType(string table, string cargoId, string cargoType)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM Cargo WHERE CargoId='{0}' AND CargoType='{1}'", cargoId, cargoType);
+                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table, cargoId, cargoType);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();
@@ -117,15 +177,15 @@ namespace TheAltisProjectEditorCargo
                 return false;
             }
         }
-        public static bool DeleteCargoSingle(Int64 id)
+        public static bool DeleteCargoSingle(string table, Int64 id)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM Cargo WHERE Id='{0}'", id);
+                    string commandText = string.Format("DELETE FROM {0} WHERE Id='{1}'", table, id);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();
@@ -139,15 +199,15 @@ namespace TheAltisProjectEditorCargo
                 return false;
             }
         }
-        public static bool DeleteCargoId(string cargoId)
+        public static bool DeleteCargoId(string table, string cargoId)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM Cargo WHERE CargoId='{0}'", cargoId);
+                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}'", table, cargoId);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();
@@ -161,15 +221,15 @@ namespace TheAltisProjectEditorCargo
                 return false;
             }
         }
-        public static bool Insert(string cargoId, string cargoType, string cargoData)
+        public static bool Insert(string table, string cargoId, string cargoType, string cargoData)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("INSERT into Cargo (CargoId, CargoType, CargoData) VALUES ('{0}', '{1}', '{2}')", cargoId, cargoType, cargoData);
+                    string commandText = string.Format("INSERT into {0} (CargoId, CargoType, CargoData) VALUES ('{1}', '{2}', '{3}')", table, cargoId, cargoType, cargoData);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();
@@ -183,15 +243,15 @@ namespace TheAltisProjectEditorCargo
                 return false;
             }
         }
-        public static bool Update(string cargoId, string cargoType, string cargoData)
+        public static bool Update(string table, string cargoId, string cargoType, string cargoData)
         {
             try
             {
-                using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringCargo))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("UPDATE Cargo SET CargoId='{0}', CargoType='{1}', CargoData='{2}'", cargoId, cargoType, cargoData);
+                    string commandText = string.Format("UPDATE {0} SET CargoId='{1}', CargoType='{2}', CargoData='{3}'", table, cargoId, cargoType, cargoData);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();

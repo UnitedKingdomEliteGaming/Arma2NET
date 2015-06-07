@@ -1,10 +1,12 @@
 private["_cargoObject"];
 _cargoObject = _this select 0;
+private["_table"];
+_table = _this select 1;
 private["_cargoId"];
-_cargoId = _this select 1;
+_cargoId = _this select 2;
 
 private["_dbResult"];	
-_dbResult = "Arma2NET" callExtension format["TAP cargo|deleteall|%1", _cargoId];
+_dbResult = "Arma2NET" callExtension format["TAP cargo|deleteall|%1|%2", _table, _cargoId];
 if (_dbResult == "OK") then {
 player globalchat "OK";
 
@@ -15,10 +17,9 @@ player globalchat "OK";
 	_quantities = _cargoArray select 1;
 	_c = (count _classnames) - 1;
 	for "_i" from 0 to _c do {
-player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
-		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|[""%3"",%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
+		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|%3|[""%4"",%5]", _table, _cargoId, _cargoType, _classnames select _i, _quantities select _i];
 		if (_dbResult != "OK") then {
-			diag_log format["ERROR: Cargo.Insert failed: %1 / %2 [""%3"",%4]", _dbResult, _cargoType, _classnames select _i, _quantities select _i];
+			diag_log format["ERROR: Cargo.Insert failed: %1 ", _dbResult];
 		};
 	};
 
@@ -28,10 +29,9 @@ player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType,
 	_quantities = _cargoArray select 1;
 	_c = (count _classnames) - 1;
 	for "_i" from 0 to _c do {
-player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
-		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|[""%3"",%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
+		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|%3|[""%4"",%5]", _table, _cargoId, _cargoType, _classnames select _i, _quantities select _i];
 		if (_dbResult != "OK") then {
-			diag_log format["ERROR: Cargo.Insert failed: %1 / %2 [""%3"",%4]", _dbResult, _cargoType, _classnames select _i, _quantities select _i];
+			diag_log format["ERROR: Cargo.Insert failed: %1 ", _dbResult];
 		};
 	};
 
@@ -41,10 +41,9 @@ player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType,
 	_quantities = _cargoArray select 1;
 	_c = (count _classnames) - 1;
 	for "_i" from 0 to _c do {
-player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
-		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|[""%3"",%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
+		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|%3|[""%4"",%5]", _table, _cargoId, _cargoType, _classnames select _i, _quantities select _i];
 		if (_dbResult != "OK") then {
-			diag_log format["ERROR: Cargo.Insert failed: %1 / %2 [""%3"",%4]", _dbResult, _cargoType, _classnames select _i, _quantities select _i];
+			diag_log format["ERROR: Cargo.Insert failed: %1 ", _dbResult];
 		};
 	};
 
@@ -54,10 +53,9 @@ player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType,
 	_quantities = _cargoArray select 1;
 	_c = (count _classnames) - 1;
 	for "_i" from 0 to _c do {
-player globalchat format["TAP cargo|insert|%1|%2|[%3,%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
-		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|[""%3"",%4]", _cargoId, _cargoType, _classnames select _i, _quantities select _i];
+		_dbResult = "Arma2NET" callExtension format["TAP cargo|insert|%1|%2|%3|[""%4"",%5]", _table, _cargoId, _cargoType, _classnames select _i, _quantities select _i];
 		if (_dbResult != "OK") then {
-			diag_log format["ERROR: Cargo.Insert failed: %1 / %2 [""%3"",%4]", _dbResult, _cargoType, _classnames select _i, _quantities select _i];
+			diag_log format["ERROR: Cargo.Insert failed: %1 ", _dbResult];
 		};
 	};	
 } else {

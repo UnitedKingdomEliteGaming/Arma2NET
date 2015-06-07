@@ -88,6 +88,7 @@
             this.MaximumSize = new System.Drawing.Size(2000, 128);
             this.MinimumSize = new System.Drawing.Size(200, 128);
             this.Name = "StringDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "StringDialog";
             this.ResumeLayout(false);
             this.PerformLayout();

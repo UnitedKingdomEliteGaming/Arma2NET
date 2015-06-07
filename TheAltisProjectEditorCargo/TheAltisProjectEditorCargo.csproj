@@ -107,12 +107,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TheAltisProjectAddin\TheAltisProjectAddin.csproj">
-      <Project>{7b7830df-c747-4e7d-b7c6-c00bc9d3ffd3}</Project>
-      <Name>TheAltisProjectAddin</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) "C:\Program Files (x86)\Steam\SteamApps\common\Arma 3\@Arma2Net\Addins\TheAltisProjectAddin"</PostBuildEvent>

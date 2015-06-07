@@ -1,4 +1,4 @@
-if (["MeinTable", "MeineUID"] call fncTapDb_ItemDelete) then
+if (["TestTable", getPlayerUid player] call fncTapDb_ItemDelete) then
 {
 	player globalchat "OK";
 } else {

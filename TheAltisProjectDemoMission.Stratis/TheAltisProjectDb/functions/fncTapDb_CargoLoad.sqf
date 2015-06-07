@@ -1,7 +1,9 @@
 private["_cargoObject"];
 _cargoObject = _this select 0;
+private["_table"];
+_table = _this select 1;
 private["_cargoId"];
-_cargoId = _this select 1;
+_cargoId = _this select 2;
 
 clearWeaponCargoGlobal _cargoObject;
 clearMagazineCargoGlobal _cargoObject;
@@ -10,7 +12,7 @@ clearBackpackCargoGlobal _cargoObject;
 
 private["_dbResult", "_cargoArray","_cargoType"];
 _cargoType = "WPN";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2", _cargoId, _cargoType];
+_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
 if (_dbResult == "OK") then {
 
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
@@ -24,7 +26,7 @@ player globalchat _dbResult;
 };
 
 _cargoType = "MAG";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2", _cargoId, _cargoType];
+_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
 if (_dbResult == "OK") then {
 
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
@@ -38,7 +40,7 @@ player globalchat _dbResult;
 };
 
 _cargoType = "ITM";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2", _cargoId, _cargoType];
+_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
 if (_dbResult == "OK") then {
 
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
@@ -52,7 +54,7 @@ player globalchat _dbResult;
 };
 
 _cargoType = "BKP";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2", _cargoId, _cargoType];
+_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
 if (_dbResult == "OK") then {
 
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	

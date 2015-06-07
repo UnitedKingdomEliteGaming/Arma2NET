@@ -42,7 +42,7 @@ class Mission
 			side="WEST";
 			class Vehicles
 			{
-				items=3;
+				items=1;
 				class Item0
 				{
 					position[]={1919.5177,5.5,5904.98};
@@ -54,24 +54,6 @@ class Mission
 					skill=0.60000002;
 					init="this addAction[""item update"",""actionItemUpdate.sqf""];this addAction[""item updateinsert"",""actionItemUpdateInsert.sqf""];this addAction[""item select"",""actionItemSelect.sqf""];this addAction[""item delete"",""actionItemDelete.sqf""];";
 				};
-				class Item1
-				{
-					position[]={1921.9385,5.5,5902.4385};
-					id=1;
-					side="WEST";
-					vehicle="B_Soldier_F";
-					player="PLAY CDG";
-					skill=0.60000002;
-				};
-				class Item2
-				{
-					position[]={1918.5492,5.5,5902.0752};
-					id=2;
-					side="WEST";
-					vehicle="B_Soldier_F";
-					player="PLAY CDG";
-					skill=0.60000002;
-				};
 			};
 		};
 	};
@@ -81,17 +63,17 @@ class Mission
 		class Item0
 		{
 			position[]={1919.2902,5.5,5910.1875};
-			id=3;
+			id=1;
 			side="EMPTY";
 			vehicle="Box_NATO_Wps_F";
 			skill=0.60000002;
 			text="MeinKiste";
-			init="this addAction[""speichern"",""actionCargoSave.sqf""];this addAction[""load"",""actionCargoLoad.sqf""];this addAction[""leeren"",""actionCargoEmpty.sqf""];";
+			init="this addAction[""cargo speichern"",""actionCargoSave.sqf""];this addAction[""cargo load"",""actionCargoLoad.sqf""];this addAction[""cargo leeren"",""actionCargoEmpty.sqf""];";
 		};
 		class Item1
 		{
 			position[]={1925.0645,5.5,5899.582};
-			id=4;
+			id=2;
 			side="EMPTY";
 			vehicle="Box_NATO_Wps_F";
 			skill=0.60000002;

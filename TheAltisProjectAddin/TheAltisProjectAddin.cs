@@ -12,6 +12,12 @@ namespace TheAltisProjectAddin
     {
         private ItemCommandManager _ItemCommandManager = new ItemCommandManager();
         private CargoCommandManager _CargoCommandManager = new CargoCommandManager();
+
+        public PersistentCampaign2()
+        {
+            MsSql.Init();
+        }
+
         #region IDisposable Member
         ~PersistentCampaign2()
         {

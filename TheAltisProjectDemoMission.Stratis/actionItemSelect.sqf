@@ -1,4 +1,4 @@
-_result = ["MeinTable", "MeineUID"] call fncTapDb_ItemSelect;
+_result = ["TestTable", getPlayerUid player] call fncTapDb_ItemSelect;
 
 
 if (_result != "ERROR") then {

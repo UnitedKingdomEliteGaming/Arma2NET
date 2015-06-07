@@ -1,1 +1,1 @@
-[(_this select 0), "IrgendEineEindeutigeId"] call fncTapDb_CargoSave;
+[(_this select 0), "TestTable", "IrgendEineEindeutigeId"] call fncTapDb_CargoSave;

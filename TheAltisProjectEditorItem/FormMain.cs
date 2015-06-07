@@ -16,6 +16,7 @@ namespace TheAltisProjectEditorItem
         {
             InitializeComponent();
 
+            MsSql.Init();
             RefreshComboboxTable();
         }
 
@@ -38,13 +39,13 @@ namespace TheAltisProjectEditorItem
         }
         private void RefreshComboboxTable()
         {
+            cmbTable.SelectedIndex = -1;
+            cmbTable.Text = "";
             cmbTable.Items.Clear();
+            tbtnDropTable.Enabled = false;
             string[] tables = MsSql.GetTables();
             foreach (string table in tables)
             {
-                if (table.ToLower() == "cargo")
-                    continue;
-
                 cmbTable.Items.Add(table);
             }
 
@@ -120,16 +121,33 @@ namespace TheAltisProjectEditorItem
         private void tbtnDropTable_Click(object sender, EventArgs e)
         {
             string table = cmbTable.Text;
-            if (MessageBox.Show("Wollen Sie wirklich die TABELLE '" + table + "' unwiederruflich löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+            if (MessageBox.Show("Wollen Sie wirklich die TABELLE '" + table + "' unwiederruflich löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
                 MsSql.DropTable(table);
                 RefreshComboboxTable();
             }
         }
+        private void tbtnRefreshTable_Click(object sender, EventArgs e)
+        {
+            RefreshComboboxTable();
+        }
         private void tbtnDeleteItem_Click(object sender, EventArgs e)
         {
-
+            if ((!string.IsNullOrWhiteSpace(SelectedTable)) && (SelectedItem != null))
+            {
+                if (MessageBox.Show("Wollen Sie wirklich den Eintrag '" + SelectedItem.ItemId + "' unwiederruflich löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    MsSql.Delete(SelectedTable, SelectedItem.Id);
+                    RefreshListviewItems();
+                    tbtnDeleteItem.Enabled = false;
+                }
+            }
         }
+        private void tbtnRefreshItems_Click(object sender, EventArgs e)
+        {
+            RefreshListviewItems();
+        }
+
         private void cmbTable_SelectedIndexChanged(object sender, EventArgs e)
         {
             tbtnDropTable.Enabled = cmbTable.SelectedIndex != -1;

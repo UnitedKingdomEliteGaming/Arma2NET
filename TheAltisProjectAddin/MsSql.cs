@@ -9,9 +9,28 @@ namespace TheAltisProjectAddin
 {
     public class MsSql
     {
-        public static class Configuration
+        private static string _ConnectionStringItem;
+        public static string ConnectionStringItem
         {
-            public static string ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Database.mdf") + ";Integrated Security=True";
+            get
+            {
+                return _ConnectionStringItem;
+            }
+        }
+        private static string _ConnectionStringCargo;
+        public static string ConnectionStringCargo
+        {
+            get
+            {
+                return _ConnectionStringCargo;
+            }
+        }
+
+        public static void Init()
+        {
+            _ConnectionStringItem = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.mdf") + ";Integrated Security=True";
+            _ConnectionStringCargo = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.mdf") + ";Integrated Security=True";
+
         }
 
         public class ItemManager
@@ -27,7 +46,7 @@ namespace TheAltisProjectAddin
             {
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
                         using (System.Data.DataTable schema = sqlConnection.GetSchema("Tables"))
@@ -50,7 +69,7 @@ namespace TheAltisProjectAddin
             {
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
 
@@ -65,7 +84,7 @@ namespace TheAltisProjectAddin
                         using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                         {
                             sqlCommand.ExecuteNonQuery();
-                            Arma2Net.Utils.Log("New table created: {0}", _Table);
+                            Arma2Net.Utils.Log("New table created (Item): {0}", _Table);
                             return true;
                         }
                     }
@@ -111,7 +130,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
 
@@ -139,7 +158,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
 
@@ -172,7 +191,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
 
@@ -198,7 +217,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
                     {
                         sqlConnection.Open();
 
@@ -230,6 +249,7 @@ namespace TheAltisProjectAddin
 
         public class CargoManager
         {
+            #region public class Result
             public class Result
             {
                 private int _CurrentIndex;
@@ -252,13 +272,69 @@ namespace TheAltisProjectAddin
                     return _Results[_CurrentIndex - 1];
                 }
             }
+            #endregion
 
-            private string _Table = "Cargo";
+            private string _Table;
 
-            public CargoManager()
+            public CargoManager(string table)
             {
+                _Table = table;
             }
 
+            private string[] GetTables()
+            {
+                try
+                {
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
+                    {
+                        sqlConnection.Open();
+                        using (System.Data.DataTable schema = sqlConnection.GetSchema("Tables"))
+                        {
+                            List<string> tables = new List<string>(8);
+                            foreach (System.Data.DataRow row in schema.Rows)
+                                tables.Add(row[2].ToString());
+
+                            return tables.ToArray();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Arma2Net.Utils.Log("Exception: " + ex.Message);
+                    return null;
+                }
+            }
+            private bool CreateTable()
+            {
+                try
+                {
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
+                    {
+                        sqlConnection.Open();
+
+                        string commandText = @"
+                            CREATE TABLE [dbo].[" + _Table + @"] (
+                                [Id]        BIGINT         IDENTITY (1, 1) NOT NULL,
+                                [CargoId]   NVARCHAR (64)  NOT NULL,
+                                [CargoType] NVARCHAR (3)   NOT NULL,
+                                [CargoData] NVARCHAR (256) NOT NULL,
+                                PRIMARY KEY CLUSTERED ([Id] ASC)
+                            );";
+
+                        using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                        {
+                            sqlCommand.ExecuteNonQuery();
+                            Arma2Net.Utils.Log("New table created (Cargo): {0}", _Table);
+                            return true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Arma2Net.Utils.Log("Exception: " + ex.Message);
+                    return false;
+                }
+            }
             private bool IsCargoIdValid(string cargoId)
             {
                 if (string.IsNullOrWhiteSpace(cargoId))
@@ -283,6 +359,17 @@ namespace TheAltisProjectAddin
                 return true;
             }
 
+            public bool Initialize()
+            {
+                string[] tables = GetTables();
+                if (tables == null)
+                    return false;
+
+                if (tables.Contains(_Table))
+                    return true;
+
+                return CreateTable();
+            }
             public bool Insert(string cargoId, string cargoType, string cargoData)
             {
                 if (!IsCargoIdValid(cargoId))
@@ -294,7 +381,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
                     {
                         sqlConnection.Open();
 
@@ -322,7 +409,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
                     {
                         sqlConnection.Open();
 
@@ -348,7 +435,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
                     {
                         sqlConnection.Open();
 
@@ -376,7 +463,7 @@ namespace TheAltisProjectAddin
 
                 try
                 {
-                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.Configuration.ConnectionString))
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
                     {
                         sqlConnection.Open();
 
