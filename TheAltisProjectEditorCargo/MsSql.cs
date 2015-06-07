@@ -243,7 +243,7 @@ namespace TheAltisProjectEditorCargo
                 return false;
             }
         }
-        public static bool Update(string table, string cargoId, string cargoType, string cargoData)
+        public static bool Update(string table, Int64 id, string cargoId, string cargoType, string cargoData)
         {
             try
             {
@@ -251,7 +251,7 @@ namespace TheAltisProjectEditorCargo
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("UPDATE {0} SET CargoId='{1}', CargoType='{2}', CargoData='{3}'", table, cargoId, cargoType, cargoData);
+                    string commandText = string.Format("UPDATE {0} SET CargoId='{1}', CargoType='{2}', CargoData='{3}' WHERE Id={4}", table, cargoId, cargoType, cargoData, id);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();

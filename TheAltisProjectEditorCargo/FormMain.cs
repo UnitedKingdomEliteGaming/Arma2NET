@@ -49,6 +49,7 @@ namespace TheAltisProjectEditorCargo
         private void RefreshListCargoId()
         {
             string[] cargoIds = MsSql.GetCargoIds(SelectedTable);
+            lstCargoId.SelectedIndex = -1;
             lstCargoId.Items.Clear();
             if (cargoIds != null)
             {
@@ -60,6 +61,7 @@ namespace TheAltisProjectEditorCargo
         }
         private void RefreshListCargoData()
         {
+            lstCargoData.SelectedIndex = -1;
             lstCargoData.Items.Clear();
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3))
             {
@@ -150,7 +152,7 @@ namespace TheAltisProjectEditorCargo
         {
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3) && (lstCargoData.SelectedItem != null))
             {
-                if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieses cargo types löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                if (MessageBox.Show("Wollen Sie wirklich den Eintrag " + (lstCargoData.SelectedItem as MsSql.IdStringPair).Text + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
                     MsSql.DeleteCargoSingle(SelectedTable, (lstCargoData.SelectedItem as MsSql.IdStringPair).Id);
                     RefreshListCargoData();
@@ -188,6 +190,7 @@ namespace TheAltisProjectEditorCargo
             RefreshListCargoData();
 
             tbtnDeleteCargoId.Enabled = (lstCargoId.SelectedIndex != -1);
+            tbtnAddCargoData.Enabled = (lstCargoId.SelectedIndex != -1);
         }
         private void cmbCargoType_TextChanged(object sender, EventArgs e)
         {

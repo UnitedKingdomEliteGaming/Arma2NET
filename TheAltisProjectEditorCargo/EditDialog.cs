@@ -39,7 +39,7 @@ namespace TheAltisProjectEditorCargo
                     if (insert)
                         MsSql.Insert(table, dlg.txtCargoId.Text, dlg.cmbCargoType.Text, dlg.txtCargoData.Text);
                     else
-                        MsSql.Update(table, dlg.txtCargoId.Text, dlg.cmbCargoType.Text, dlg.txtCargoData.Text);
+                        MsSql.Update(table, id, dlg.txtCargoId.Text, dlg.cmbCargoType.Text, dlg.txtCargoData.Text);
 
                     return dlg.txtCargoId.Text;
                 }

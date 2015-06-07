@@ -10,59 +10,79 @@ clearMagazineCargoGlobal _cargoObject;
 clearItemCargoGlobal _cargoObject;
 clearBackpackCargoGlobal _cargoObject;
 
-private["_dbResult", "_cargoArray","_cargoType"];
+private["_dbResult", "_cargoArray","_cargoType", "_timeout"];
 _cargoType = "WPN";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
+_timeout = 10;
+_dbResult = "";
+while { true } do
+{
+	_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];	
+	if ((_dbResult != "ERROR_CARGO_SELECT_ACTIVE") || (_timeout <= 0)) exitWith {};	
+	Sleep 1;
+	_timeout = _timeout - 1;
+};
 if (_dbResult == "OK") then {
-
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	while { (_dbResult != "EOF") && (_dbResult != "ERROR") } do {
 		_cargoArray = call compile _dbResult;
 		_cargoObject addWeaponCargoGlobal _cargoArray;
 		_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	};
 };
 
 _cargoType = "MAG";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
+_timeout = 10;
+_dbResult = "";
+while { true } do
+{
+	_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];	
+	if ((_dbResult != "ERROR_CARGO_SELECT_ACTIVE") || (_timeout <= 0)) exitWith {};	
+	Sleep 1;
+	_timeout = _timeout - 1;
+};
 if (_dbResult == "OK") then {
-
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	while { (_dbResult != "EOF") && (_dbResult != "ERROR") } do {
 		_cargoArray = call compile _dbResult;
 		_cargoObject addMagazineCargoGlobal _cargoArray;
 		_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	};
 };
 
 _cargoType = "ITM";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
+_timeout = 10;
+_dbResult = "";
+while { true } do
+{
+	_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];	
+	if ((_dbResult != "ERROR_CARGO_SELECT_ACTIVE") || (_timeout <= 0)) exitWith {};	
+	Sleep 1;
+	_timeout = _timeout - 1;
+};
 if (_dbResult == "OK") then {
-
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	while { (_dbResult != "EOF") && (_dbResult != "ERROR") } do {
 		_cargoArray = call compile _dbResult;
 		_cargoObject addItemCargoGlobal _cargoArray;
 		_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	};
 };
 
 _cargoType = "BKP";
-_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];
+_timeout = 10;
+_dbResult = "";
+while { true } do
+{
+	_dbResult = "Arma2NET" callExtension format["TAP cargo|select|%1|%2|%3", _table, _cargoId, _cargoType];	
+	if ((_dbResult != "ERROR_CARGO_SELECT_ACTIVE") || (_timeout <= 0)) exitWith {};	
+	Sleep 1;
+	_timeout = _timeout - 1;
+};
 if (_dbResult == "OK") then {
-
 	_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	while { (_dbResult != "EOF") && (_dbResult != "ERROR") } do {
 		_cargoArray = call compile _dbResult;
 		_cargoObject addBackpackCargoGlobal _cargoArray;
 		_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
-player globalchat _dbResult;
 	};
 };
