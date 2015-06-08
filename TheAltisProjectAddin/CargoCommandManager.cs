@@ -40,6 +40,29 @@ namespace TheAltisProjectAddin
                     }
                     #endregion
                 }
+                else if (split[1].ToLower() == "selectids")
+                {
+                    #region cargo|select|table
+                    try
+                    {
+                        if (split.Length < 3)
+                            return "ERROR_CARGO_SELECTIDS_SPLIT_LENGTH";
+
+                        if (_Result != null)
+                            return "ERROR_CARGO_SELECTIDS_ACTIVE";
+
+                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
+                        _Result = sql.SelectIds();
+
+                        return "OK";
+                    }
+                    catch (Exception ex)
+                    {
+                        Arma2Net.Utils.Log("ERROR: CARGO.SelectIds failed: " + ex.Message);
+                        return "ERROR_CARGO_SELECTIDS_EXCEPTION";
+                    }
+                    #endregion
+                }
                 else if (split[1].ToLower() == "selectnext")
                 {
                     #region cargo|selectnext

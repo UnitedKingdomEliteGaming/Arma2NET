@@ -8,6 +8,8 @@ namespace TheAltisProjectAddin
 {
     class ItemCommandManager
     {
+        private MsSql.ItemManager.Result _Result = null;
+
         public string Parse(string[] split)
         {
             try
@@ -40,6 +42,62 @@ namespace TheAltisProjectAddin
                     {
                         Arma2Net.Utils.Log("ERROR: Item.Select failed: " + ex.Message);
                         return "ERROR";
+                    }
+                    #endregion
+                }
+                if (split[1].ToLower() == "selectids")
+                {
+                    #region item|selectids|table
+                    try
+                    {
+                        if (split.Length < 3)
+                            return "ERROR_ITEM_SELECTIDS_SPLIT_LENGTH";
+
+                        if (_Result != null)
+                            return "ERROR_CARGO_SELECTIDS_ACTIVE";
+
+                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2]);
+                        _Result = sql.SelectIds();
+
+                        return "OK";
+                    }
+                    catch (Exception ex)
+                    {
+                        Arma2Net.Utils.Log("ERROR: CARGO.Select failed: " + ex.Message);
+                        return "ERROR_CARGO_SELECT_EXCEPTION";
+                    }
+                    #endregion
+                }
+                else if (split[1].ToLower() == "selectnext")
+                {
+                    #region item|selectnext
+                    try
+                    {
+                        if (split.Length < 2)
+                        {
+                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_SPLIT_LENGTH");
+                            return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
+                        }
+
+                        if (_Result == null)
+                        {
+                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_INACTIVE");
+                            return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
+                        }
+
+                        string result = _Result.Next();
+                        if (result == null)
+                        {
+                            _Result = null;
+                            return "EOF"; // Alles gut, das war der letzt Eintrag
+                        }
+
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Arma2Net.Utils.Log("ERROR: ITEM.Selectnext failed: " + ex.Message);
+                        return "ITEM"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                     }
                     #endregion
                 }

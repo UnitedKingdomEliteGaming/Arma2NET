@@ -35,6 +35,31 @@ namespace TheAltisProjectAddin
 
         public class ItemManager
         {
+            #region public class Result
+            public class Result
+            {
+                private int _CurrentIndex;
+                private string[] _Results;
+
+                public Result(string[] results)
+                {
+                    _Results = results;
+                    _CurrentIndex = 0;
+                }
+
+                public string Next()
+                {
+                    if (_Results == null)
+                        return null;
+                    if (_CurrentIndex >= _Results.Length)
+                        return null;
+
+                    _CurrentIndex++;
+                    return _Results[_CurrentIndex - 1];
+                }
+            }
+            #endregion
+
             private string _Table;
 
             public ItemManager(string table)
@@ -235,6 +260,40 @@ namespace TheAltisProjectAddin
                                 string result = sqlReader.GetString(0);
                                 //Arma2Net.Utils.Log(commandText + ": " + result);
                                 return result;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Arma2Net.Utils.Log("Exception: " + ex.Message);
+                    return null;
+                }
+            }
+            public Result SelectIds()
+            {
+                try
+                {
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringItem))
+                    {
+                        sqlConnection.Open();
+
+                        string commandText = string.Format("SELECT ItemId FROM {0}", _Table);
+                        using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                        {
+                            using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
+                            {
+                                List<string> results = new List<string>(32);
+                                while (sqlReader.Read())
+                                {
+                                    if (sqlReader.IsDBNull(0))
+                                        return null;
+
+                                    results.Add(sqlReader.GetString(0));
+                                }
+
+                                //Arma2Net.Utils.Log(commandText + ": " + result);
+                                return new Result(results.ToArray());
                             }
                         }
                     }
@@ -468,6 +527,39 @@ namespace TheAltisProjectAddin
                         sqlConnection.Open();
 
                         string commandText = string.Format("SELECT CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", _Table, cargoId, cargoType);
+                        using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                        {
+                            List<string> items = new List<string>(8);
+                            using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
+                            {
+                                while (sqlReader.Read())
+                                {
+                                    if (sqlReader.IsDBNull(0))
+                                        return null;
+
+                                    items.Add(sqlReader.GetString(0));
+                                }
+
+                                return new Result(items.ToArray());
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Arma2Net.Utils.Log("Exception: " + ex.Message);
+                    return null;
+                }
+            }
+            public Result SelectIds()
+            {
+                try
+                {
+                    using (SqlConnection sqlConnection = new SqlConnection(MsSql.ConnectionStringCargo))
+                    {
+                        sqlConnection.Open();
+
+                        string commandText = string.Format("SELECT CargoId FROM {0}", _Table);
                         using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                         {
                             List<string> items = new List<string>(8);
