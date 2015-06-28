@@ -1,3 +1,6 @@
+private["_duration"];
+_duration = diag_tickTime;
+
 private["_table"];
 _table = _this select 0;
 
@@ -20,4 +23,5 @@ if (_dbResult == "OK") then {
 	};
 };
 
+diag_log format ["[DURATION] ItemSelectIds: %1", (diag_tickTime - _duration) ];
 _result;

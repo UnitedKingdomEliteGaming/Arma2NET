@@ -38,13 +38,16 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnDropTable = new System.Windows.Forms.ToolStripButton();
+            this.tbtnRefreshTable = new System.Windows.Forms.ToolStripButton();
             this.pnlItems = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.tbtnDeleteItem = new System.Windows.Forms.ToolStripButton();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbtnDeleteItem = new System.Windows.Forms.ToolStripButton();
             this.tbtnRefreshItems = new System.Windows.Forms.ToolStripButton();
-            this.tbtnRefreshTable = new System.Windows.Forms.ToolStripButton();
+            this.tbtnAddItem = new System.Windows.Forms.ToolStripButton();
+            this.tbtnEditItem = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.pnlTable.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             this.pnlItems.SuspendLayout();
@@ -138,6 +141,17 @@
             this.tbtnDropTable.Text = "toolStripButton1";
             this.tbtnDropTable.Click += new System.EventHandler(this.tbtnDropTable_Click);
             // 
+            // tbtnRefreshTable
+            // 
+            this.tbtnRefreshTable.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tbtnRefreshTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnRefreshTable.Image = ((System.Drawing.Image)(resources.GetObject("tbtnRefreshTable.Image")));
+            this.tbtnRefreshTable.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnRefreshTable.Name = "tbtnRefreshTable";
+            this.tbtnRefreshTable.Size = new System.Drawing.Size(23, 22);
+            this.tbtnRefreshTable.Text = "reload";
+            this.tbtnRefreshTable.Click += new System.EventHandler(this.tbtnRefreshTable_Click);
+            // 
             // pnlItems
             // 
             this.pnlItems.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -157,23 +171,15 @@
             this.toolStripLabel2,
             this.toolStripSeparator2,
             this.tbtnDeleteItem,
-            this.tbtnRefreshItems});
+            this.tbtnRefreshItems,
+            this.toolStripSeparator3,
+            this.tbtnAddItem,
+            this.tbtnEditItem});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1012, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // tbtnDeleteItem
-            // 
-            this.tbtnDeleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnDeleteItem.Enabled = false;
-            this.tbtnDeleteItem.Image = ((System.Drawing.Image)(resources.GetObject("tbtnDeleteItem.Image")));
-            this.tbtnDeleteItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnDeleteItem.Name = "tbtnDeleteItem";
-            this.tbtnDeleteItem.Size = new System.Drawing.Size(23, 22);
-            this.tbtnDeleteItem.Text = "delete item";
-            this.tbtnDeleteItem.Click += new System.EventHandler(this.tbtnDeleteItem_Click);
             // 
             // toolStripLabel2
             // 
@@ -186,6 +192,17 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
+            // tbtnDeleteItem
+            // 
+            this.tbtnDeleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnDeleteItem.Enabled = false;
+            this.tbtnDeleteItem.Image = ((System.Drawing.Image)(resources.GetObject("tbtnDeleteItem.Image")));
+            this.tbtnDeleteItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnDeleteItem.Name = "tbtnDeleteItem";
+            this.tbtnDeleteItem.Size = new System.Drawing.Size(23, 22);
+            this.tbtnDeleteItem.Text = "delete item";
+            this.tbtnDeleteItem.Click += new System.EventHandler(this.tbtnDeleteItem_Click);
+            // 
             // tbtnRefreshItems
             // 
             this.tbtnRefreshItems.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -197,16 +214,32 @@
             this.tbtnRefreshItems.Text = "reload";
             this.tbtnRefreshItems.Click += new System.EventHandler(this.tbtnRefreshItems_Click);
             // 
-            // tbtnRefreshTable
+            // tbtnAddItem
             // 
-            this.tbtnRefreshTable.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.tbtnRefreshTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnRefreshTable.Image = ((System.Drawing.Image)(resources.GetObject("tbtnRefreshTable.Image")));
-            this.tbtnRefreshTable.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnRefreshTable.Name = "tbtnRefreshTable";
-            this.tbtnRefreshTable.Size = new System.Drawing.Size(23, 22);
-            this.tbtnRefreshTable.Text = "reload";
-            this.tbtnRefreshTable.Click += new System.EventHandler(this.tbtnRefreshTable_Click);
+            this.tbtnAddItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnAddItem.Enabled = false;
+            this.tbtnAddItem.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAddItem.Image")));
+            this.tbtnAddItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAddItem.Name = "tbtnAddItem";
+            this.tbtnAddItem.Size = new System.Drawing.Size(23, 22);
+            this.tbtnAddItem.Text = "add";
+            this.tbtnAddItem.Click += new System.EventHandler(this.tbtnAddItem_Click);
+            // 
+            // tbtnEditItem
+            // 
+            this.tbtnEditItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnEditItem.Enabled = false;
+            this.tbtnEditItem.Image = ((System.Drawing.Image)(resources.GetObject("tbtnEditItem.Image")));
+            this.tbtnEditItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnEditItem.Name = "tbtnEditItem";
+            this.tbtnEditItem.Size = new System.Drawing.Size(23, 22);
+            this.tbtnEditItem.Text = "edit";
+            this.tbtnEditItem.Click += new System.EventHandler(this.tbtnEditItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // FormMain
             // 
@@ -247,6 +280,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton tbtnDeleteItem;
         private System.Windows.Forms.ToolStripButton tbtnRefreshItems;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton tbtnAddItem;
+        private System.Windows.Forms.ToolStripButton tbtnEditItem;
     }
 }
 

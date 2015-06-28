@@ -1,3 +1,6 @@
+private["_duration"];
+_duration = diag_tickTime;
+
 private["_cargoObject"];
 _cargoObject = _this select 0;
 private["_table"];
@@ -86,3 +89,4 @@ if (_dbResult == "OK") then {
 		_dbResult = "Arma2NET" callExtension "TAP cargo|selectnext";	
 	};
 };
+diag_log format ["[DURATION] CargoLoad: %1", (diag_tickTime - _duration) ];

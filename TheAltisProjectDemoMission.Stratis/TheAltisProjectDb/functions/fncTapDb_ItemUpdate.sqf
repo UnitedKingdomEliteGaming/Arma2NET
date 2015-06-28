@@ -1,3 +1,6 @@
+private["_duration"];
+_duration = diag_tickTime;
+
 private["_table"];
 _table = _this select 0;
 private["_itemId"];
@@ -10,4 +13,5 @@ _dbResult = "Arma2NET" callExtension format["TAP item|update|%1|%2|%3", _table, 
 
 private["_result"];
 _result = (_dbResult == "OK"); 
+diag_log format ["[DURATION] ItemUpdate: %1", (diag_tickTime - _duration) ];
 _result;

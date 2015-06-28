@@ -80,6 +80,7 @@ namespace TheAltisProjectAddin
                             foreach (System.Data.DataRow row in schema.Rows)
                                 tables.Add(row[2].ToString());
 
+                            sqlConnection.Close();
                             return tables.ToArray();
                         }
                     }
@@ -110,6 +111,7 @@ namespace TheAltisProjectAddin
                         {
                             sqlCommand.ExecuteNonQuery();
                             Arma2Net.Utils.Log("New table created (Item): {0}", _Table);
+                            sqlConnection.Close();
                             return true;
                         }
                     }
@@ -164,6 +166,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return (result == 1);
                         }
                     }
@@ -192,6 +195,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return (result == 1);
                         }
                     }
@@ -225,6 +229,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return (result == 1);
                         }
                     }
@@ -259,6 +264,7 @@ namespace TheAltisProjectAddin
 
                                 string result = sqlReader.GetString(0);
                                 //Arma2Net.Utils.Log(commandText + ": " + result);
+                                sqlConnection.Close();
                                 return result;
                             }
                         }
@@ -293,7 +299,9 @@ namespace TheAltisProjectAddin
                                 }
 
                                 //Arma2Net.Utils.Log(commandText + ": " + result);
-                                return new Result(results.ToArray());
+                                Result result = new Result(results.ToArray());
+                                sqlConnection.Close();
+                                return result;
                             }
                         }
                     }
@@ -353,6 +361,7 @@ namespace TheAltisProjectAddin
                             foreach (System.Data.DataRow row in schema.Rows)
                                 tables.Add(row[2].ToString());
 
+                            sqlConnection.Close();
                             return tables.ToArray();
                         }
                     }
@@ -384,6 +393,7 @@ namespace TheAltisProjectAddin
                         {
                             sqlCommand.ExecuteNonQuery();
                             Arma2Net.Utils.Log("New table created (Cargo): {0}", _Table);
+                            sqlConnection.Close();
                             return true;
                         }
                     }
@@ -449,6 +459,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return (result == 1);
                         }
                     }
@@ -477,6 +488,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return true;
                         }
                     }
@@ -503,6 +515,7 @@ namespace TheAltisProjectAddin
                         {
                             int result = sqlCommand.ExecuteNonQuery();
                             //Arma2Net.Utils.Log(commandText + ": " + result);
+                            sqlConnection.Close();
                             return true;
                         }
                     }
@@ -540,7 +553,9 @@ namespace TheAltisProjectAddin
                                     items.Add(sqlReader.GetString(0));
                                 }
 
-                                return new Result(items.ToArray());
+                                Result result = new Result(items.ToArray());
+                                sqlConnection.Close();
+                                return result;
                             }
                         }
                     }
@@ -573,7 +588,9 @@ namespace TheAltisProjectAddin
                                     items.Add(sqlReader.GetString(0));
                                 }
 
-                                return new Result(items.ToArray());
+                                Result result = new Result(items.ToArray());
+                                sqlConnection.Close();
+                                return result;
                             }
                         }
                     }

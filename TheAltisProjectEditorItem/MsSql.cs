@@ -128,7 +128,7 @@ namespace TheAltisProjectEditorItem
                 return null;
             }
         }
-        public static bool Update(string table, Int64 id, string itemData)
+        public static bool Insert(string table, string id, string data)
         {
             try
             {
@@ -136,7 +136,29 @@ namespace TheAltisProjectEditorItem
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("UPDATE {0} SET ItemData='{2}' WHERE Id={1}", table, id, itemData);
+                    string commandText = string.Format("INSERT into {0} (ItemId, ItemData) VALUES ('{1}', '{2}')", table, id, data);
+                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                    {
+                        int result = sqlCommand.ExecuteNonQuery();
+                        return (result == 1);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Exception: " + ex.Message);
+                return false;
+            }
+        }
+        public static bool Update(string table, Int64 id, string itemId, string itemData)
+        {
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(ConnectionStringItem))
+                {
+                    sqlConnection.Open();
+
+                    string commandText = string.Format("UPDATE {0} SET ItemId='{2}' ItemData='{3}' WHERE Id={1}", table, itemId, itemData);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();

@@ -55,6 +55,7 @@ namespace TheAltisProjectEditorItem
         {
             lvwItems.Items.Clear();
 
+            tbtnAddItem.Enabled = !string.IsNullOrWhiteSpace(SelectedTable);
             MsSql.SqlItem[] sqlItems = MsSql.GetItems(SelectedTable);
             if (sqlItems != null)
             {
@@ -143,6 +144,27 @@ namespace TheAltisProjectEditorItem
                 }
             }
         }
+        private void tbtnAddItem_Click(object sender, EventArgs e)
+        {
+            if (EditDialog.ExecuteDialog_Insert(SelectedTable) != "")
+            {
+                RefreshListviewItems();
+                lvwItems.SelectedIndices.Add(0);
+            }
+        }
+        private void tbtnEditItem_Click(object sender, EventArgs e)
+        {
+            MsSql.SqlItem sqlItem = SelectedItem;
+            if (sqlItem != null)
+            {
+                if (EditDialog.ExecuteDialog_Update(SelectedTable, sqlItem.Id, sqlItem.ItemId, sqlItem.ItemData) != "")
+                {
+                    int index = lvwItems.SelectedIndices[0];
+                    RefreshListviewItems();
+                    lvwItems.SelectedIndices.Add(index);
+                }
+            }
+        }
         private void tbtnRefreshItems_Click(object sender, EventArgs e)
         {
             RefreshListviewItems();
@@ -157,22 +179,11 @@ namespace TheAltisProjectEditorItem
         private void lvwItems_SelectedIndexChanged(object sender, EventArgs e)
         {
             tbtnDeleteItem.Enabled = lvwItems.SelectedItems.Count > 0;
+            tbtnEditItem.Enabled = lvwItems.SelectedItems.Count > 0;
         }
-
         private void lvwItems_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            MsSql.SqlItem sqlItem = SelectedItem;
-            if (sqlItem != null)
-            {
-                string result = StringDialog.ExecuteDialog("Bearbeiten", "Data", sqlItem.ItemData);
-                if (result != null)
-                {
-                    MsSql.Update(SelectedTable, sqlItem.Id, result);
-                    int index = lvwItems.SelectedIndices[0];
-                    RefreshListviewItems();
-                    lvwItems.SelectedIndices.Add(index);
-                }
-            }
+            tbtnEditItem.PerformClick();
         }
     }
 }
