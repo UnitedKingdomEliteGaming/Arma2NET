@@ -9,11 +9,17 @@ namespace TheAltisProjectDatabase
 {
     public class DatabaseItemMsSql : IDatabaseItem, IDatabaseItemGui
     {
+        private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseItemMsSql()
+        public DatabaseItemMsSql(LogManagerBase logManager)
         {
+            _LogManager = logManager;
             _ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.mdf") + ";Integrated Security=True";
+
+
+            // Server=.\SQLExpress;AttachDbFilename=C:\MyFolder\MyDataFile.mdf;Database=dbname;Trusted_Connection=Yes;
+            //Server=.\SQLExpress;AttachDbFilename=|DataDirectory|mydbfile.mdf;Database=dbname;Trusted_Connection = Yes;
         }
 
         private bool CreateTable(string table)
@@ -35,7 +41,7 @@ namespace TheAltisProjectDatabase
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         sqlCommand.ExecuteNonQuery();
-                        LogManager.Write("New table created (Item): {0}", table);
+                        _LogManager.Error("New table created (Item): {0}", table);
                         sqlConnection.Close();
                         return true;
                     }
@@ -43,7 +49,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -82,7 +88,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write(ex.Message);
+                _LogManager.Error(ex.Message);
                 return null;
             }
         }
@@ -104,7 +110,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -139,11 +145,11 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
-        public bool Initialize(string table)
+        public bool OpenOrCreateTable(string table)
         {            
             string[] tables = GetTables();
             if (tables == null)
@@ -179,7 +185,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -201,7 +207,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -230,7 +236,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -259,7 +265,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -286,7 +292,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -322,7 +328,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -358,7 +364,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }  
@@ -366,10 +372,12 @@ namespace TheAltisProjectDatabase
 
     public class DatabaseCargoMsSql : IDatabaseCargo, IDatabaseCargoGui
     {
+        private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseCargoMsSql()
+        public DatabaseCargoMsSql(LogManagerBase logManager)
         {
+            _LogManager = logManager;
             _ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.mdf") + ";Integrated Security=True";
         }
 
@@ -393,7 +401,7 @@ namespace TheAltisProjectDatabase
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         sqlCommand.ExecuteNonQuery();
-                        LogManager.Write("New table created (Cargo): {0}", table.ToLower());
+                        _LogManager.Error("New table created (Cargo): {0}", table.ToLower());
                         sqlConnection.Close();
                         return true;
                     }
@@ -401,7 +409,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -430,7 +438,7 @@ namespace TheAltisProjectDatabase
         }
 
         // IDatabaseCargo
-        public bool Initialize(string table)
+        public bool OpenOrCreateTable(string table)
         {
             string[] tables = GetTables();
             if (tables == null)
@@ -468,7 +476,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -490,7 +498,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -517,7 +525,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -546,7 +554,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -586,7 +594,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -621,7 +629,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -647,7 +655,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -669,7 +677,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -700,7 +708,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -733,7 +741,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -755,7 +763,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }

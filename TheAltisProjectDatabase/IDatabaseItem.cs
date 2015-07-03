@@ -4,7 +4,7 @@ namespace TheAltisProjectDatabase
     public interface IDatabaseItem
     {
         bool DeleteItemId(string table, string id);
-        bool Initialize(string table);
+        bool OpenOrCreateTable(string table);
         bool InsertItemId(string table, string id, string data);
         string Select(string table, string id);
         Result SelectIds(string table);
@@ -14,6 +14,8 @@ namespace TheAltisProjectDatabase
 
     public interface IDatabaseItemGui
     {
+        bool OpenOrCreateTable(string table);
+
         string[] GetTables();
         bool DropTable(string table);
         SqlItem[] GetItems(string table);

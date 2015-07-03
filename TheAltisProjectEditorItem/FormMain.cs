@@ -18,7 +18,7 @@ namespace TheAltisProjectEditorItem
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectDatabase.DatabaseItemMsSql();               
+            _IDatabase = new TheAltisProjectDatabase.DatabaseItemSQLite(new LogManager());
 
             RefreshComboboxTable();
         }
@@ -59,11 +59,14 @@ namespace TheAltisProjectEditorItem
             lvwItems.Items.Clear();
 
             tbtnAddItem.Enabled = !string.IsNullOrWhiteSpace(SelectedTable);
-            TheAltisProjectDatabase.SqlItem[] sqlItems = _IDatabase.GetItems(SelectedTable);
-            if (sqlItems != null)
+            if (SelectedTable != null)
             {
-                foreach (TheAltisProjectDatabase.SqlItem sqlItem in sqlItems)
-                    lvwItems.Items.Add(new ListViewItem(new string[] { sqlItem.ItemId, sqlItem.ItemData })).Tag = sqlItem;
+                TheAltisProjectDatabase.SqlItem[] sqlItems = _IDatabase.GetItems(SelectedTable);
+                if (sqlItems != null)
+                {
+                    foreach (TheAltisProjectDatabase.SqlItem sqlItem in sqlItems)
+                        lvwItems.Items.Add(new ListViewItem(new string[] { sqlItem.ItemId, sqlItem.ItemData })).Tag = sqlItem;
+                }
             }
         }
 
@@ -122,6 +125,11 @@ namespace TheAltisProjectEditorItem
             return result;
         }
 
+        private void tbtnAddTestTable_Click(object sender, EventArgs e)
+        {
+            _IDatabase.OpenOrCreateTable("test");
+            RefreshComboboxTable();
+        }
         private void tbtnDropTable_Click(object sender, EventArgs e)
         {
             string table = cmbTable.Text;
@@ -188,5 +196,6 @@ namespace TheAltisProjectEditorItem
         {
             tbtnEditItem.PerformClick();
         }
+
     }
 }

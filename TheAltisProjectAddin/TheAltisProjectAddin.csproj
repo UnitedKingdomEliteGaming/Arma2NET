@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ItemCommandManager.cs" />
+    <Compile Include="LogManager.cs" />
     <Compile Include="TheAltisProjectAddin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CargoCommandManager.cs" />

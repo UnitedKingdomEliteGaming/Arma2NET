@@ -14,7 +14,7 @@ namespace TheAltisProjectAddin
 
         public CargoCommandManager()
         {
-            _IDatabaseCargo = new DatabaseCargoMsSql();
+            _IDatabaseCargo = new DatabaseCargoMsSql(new LogManager());
         }
         public string Parse(string[] split)
         {
@@ -168,7 +168,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 3)
                             return "ERROR_CARGO_INIT_SPLIT_LENGTH";
 
-                        if (!_IDatabaseCargo.Initialize(split[2]))
+                        if (!_IDatabaseCargo.OpenOrCreateTable(split[2]))
                             return "ERROR_CARGO_INIT";
 
                         return "OK";

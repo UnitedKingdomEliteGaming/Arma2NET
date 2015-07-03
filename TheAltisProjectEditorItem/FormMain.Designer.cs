@@ -39,15 +39,16 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnDropTable = new System.Windows.Forms.ToolStripButton();
             this.tbtnRefreshTable = new System.Windows.Forms.ToolStripButton();
+            this.tbtnAddTestTable = new System.Windows.Forms.ToolStripButton();
             this.pnlItems = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnDeleteItem = new System.Windows.Forms.ToolStripButton();
             this.tbtnRefreshItems = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnAddItem = new System.Windows.Forms.ToolStripButton();
             this.tbtnEditItem = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.pnlTable.SuspendLayout();
             this.toolStrip2.SuspendLayout();
             this.pnlItems.SuspendLayout();
@@ -112,7 +113,8 @@
             this.toolStripLabel1,
             this.toolStripSeparator1,
             this.tbtnDropTable,
-            this.tbtnRefreshTable});
+            this.tbtnRefreshTable,
+            this.tbtnAddTestTable});
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Size = new System.Drawing.Size(1012, 25);
@@ -138,7 +140,7 @@
             this.tbtnDropTable.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnDropTable.Name = "tbtnDropTable";
             this.tbtnDropTable.Size = new System.Drawing.Size(23, 22);
-            this.tbtnDropTable.Text = "toolStripButton1";
+            this.tbtnDropTable.Text = "delete table";
             this.tbtnDropTable.Click += new System.EventHandler(this.tbtnDropTable_Click);
             // 
             // tbtnRefreshTable
@@ -151,6 +153,16 @@
             this.tbtnRefreshTable.Size = new System.Drawing.Size(23, 22);
             this.tbtnRefreshTable.Text = "reload";
             this.tbtnRefreshTable.Click += new System.EventHandler(this.tbtnRefreshTable_Click);
+            // 
+            // tbtnAddTestTable
+            // 
+            this.tbtnAddTestTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnAddTestTable.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAddTestTable.Image")));
+            this.tbtnAddTestTable.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAddTestTable.Name = "tbtnAddTestTable";
+            this.tbtnAddTestTable.Size = new System.Drawing.Size(23, 22);
+            this.tbtnAddTestTable.Text = "add \"test\" table";
+            this.tbtnAddTestTable.Click += new System.EventHandler(this.tbtnAddTestTable_Click);
             // 
             // pnlItems
             // 
@@ -214,6 +226,11 @@
             this.tbtnRefreshItems.Text = "reload";
             this.tbtnRefreshItems.Click += new System.EventHandler(this.tbtnRefreshItems_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // tbtnAddItem
             // 
             this.tbtnAddItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -235,11 +252,6 @@
             this.tbtnEditItem.Size = new System.Drawing.Size(23, 22);
             this.tbtnEditItem.Text = "edit";
             this.tbtnEditItem.Click += new System.EventHandler(this.tbtnEditItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // FormMain
             // 
@@ -283,6 +295,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton tbtnAddItem;
         private System.Windows.Forms.ToolStripButton tbtnEditItem;
+        private System.Windows.Forms.ToolStripButton tbtnAddTestTable;
     }
 }
 

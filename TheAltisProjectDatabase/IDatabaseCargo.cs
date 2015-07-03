@@ -5,7 +5,7 @@ namespace TheAltisProjectDatabase
     {
         bool DeleteCargoId(string table, string cargoId);
         bool DeleteCargoType(string table, string cargoId, string cargoType);
-        bool Initialize(string table);
+        bool OpenOrCreateTable(string table);
         bool Insert(string table, string cargoId, string cargoType, string cargoData);
         Result Select(string table, string cargoId, string cargoType);
         Result SelectIds(string table);
@@ -13,6 +13,7 @@ namespace TheAltisProjectDatabase
     public interface IDatabaseCargoGui
     {
         string[] GetTables();
+        bool OpenOrCreateTable(string table);
         bool DropTable(string table);
         string[] GetCargoIds(string table);
         IdStringPair[] GetCargoData(string table, string cargoId, string cargoType);

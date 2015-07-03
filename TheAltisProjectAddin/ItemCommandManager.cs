@@ -14,7 +14,7 @@ namespace TheAltisProjectAddin
 
         public ItemCommandManager()
         {
-            _IDatabaseItem = new DatabaseItemMsSql();
+            _IDatabaseItem = new DatabaseItemMsSql(new LogManager());
         }
 
         public string Parse(string[] split)
@@ -154,7 +154,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 3)
                             return "ERROR_ITEM_INIT_SPLIT_LENGTH";
 
-                        if (!_IDatabaseItem.Initialize(split[2]))
+                        if (!_IDatabaseItem.OpenOrCreateTable(split[2]))
                             return "ERROR_ITEM_INIT";
 
                         return "OK";

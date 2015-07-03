@@ -19,7 +19,7 @@ namespace TheAltisProjectEditorCargo
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectDatabase.DatabaseCargoMsSql();
+            _IDatabase = new TheAltisProjectDatabase.DatabaseCargoSQLite(new LogManager());
 
             cmbCargoType.SelectedIndex = 0;
             RefreshComboboxTable();
@@ -77,6 +77,11 @@ namespace TheAltisProjectEditorCargo
             }
         }
 
+        private void tbtnAddTestTable_Click(object sender, EventArgs e)
+        {
+            _IDatabase.OpenOrCreateTable("test");
+            RefreshComboboxTable();
+        }
         private void tbtnDropTable_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(SelectedTable))
@@ -183,6 +188,7 @@ namespace TheAltisProjectEditorCargo
         private void cmbTable_SelectedIndexChanged(object sender, EventArgs e)
         {
             tbtnDropTable.Enabled = cmbTable.SelectedIndex != -1;
+            tbtnAddCargoData.Enabled = (cmbTable.SelectedIndex != -1);
 
             RefreshListCargoId();
         }
@@ -191,7 +197,6 @@ namespace TheAltisProjectEditorCargo
             RefreshListCargoData();
 
             tbtnDeleteCargoId.Enabled = (lstCargoId.SelectedIndex != -1);
-            tbtnAddCargoData.Enabled = (lstCargoId.SelectedIndex != -1);
         }
         private void cmbCargoType_TextChanged(object sender, EventArgs e)
         {

@@ -9,33 +9,34 @@ namespace TheAltisProjectDatabase
 {
     public class DatabaseItemSQLite : IDatabaseItem, IDatabaseItemGui
     {
+        private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseItemSQLite()
+        public DatabaseItemSQLite(LogManagerBase logManager)
         {
-            _ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.mdf") + ";Integrated Security=True";
+            _LogManager = logManager;
+
+            _ConnectionString = @"Data Source=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.sqlite") + ";Version=3;UseUTF16Encoding=True;";
         }
 
         private bool CreateTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = @"
-                            CREATE TABLE [dbo].[" + table.ToLower() + @"] (
-                                [Id] BIGINT IDENTITY (1, 1) NOT NULL,
-                                [ItemId]   NVARCHAR (64)  NOT NULL,
-                                [ItemData] NVARCHAR (MAX) NOT NULL,
-                                PRIMARY KEY CLUSTERED ([Id] ASC)
-                            );";
+                    string commandText = "CREATE  TABLE \"main\".\"" + table.ToLower() + 
+                        "\" (\"Id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"ItemId\" VARCHAR NOT NULL , \"ItemData\" VARCHAR)";
 
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         SQLiteCommand.ExecuteNonQuery();
-                        LogManager.Write("New table created (Item): {0}", table);
+                        _LogManager.Info("New table created (Item): {0}", table);
                         SQLiteConnection.Close();
                         return true;
                     }
@@ -43,7 +44,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -73,7 +74,8 @@ namespace TheAltisProjectDatabase
                     {
                         List<string> tables = new List<string>(8);
                         foreach (System.Data.DataRow row in schema.Rows)
-                            tables.Add(row[2].ToString());
+                            if (row[2].ToString().ToLower() != "sqlite_sequence")
+                                tables.Add(row[2].ToString());
 
                         SQLiteConnection.Close();
                         return tables.ToArray();
@@ -82,19 +84,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write(ex.Message);
+                _LogManager.Error(ex.Message);
                 return null;
             }
         }
         public bool DropTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DROP TABLE {0}", table);
+                    string commandText = string.Format("DROP TABLE '{0}'", table.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -104,19 +109,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public SqlItem[] GetItems(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return new SqlItem[0];
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    SQLiteCommand SQLiteCommand = new SQLiteCommand(string.Format("SELECT Id, ItemId, ItemData FROM {0} ORDER BY ItemId DESC;", table), SQLiteConnection);
+                    SQLiteCommand SQLiteCommand = new SQLiteCommand(string.Format("SELECT Id, ItemId, ItemData FROM '{0}' ORDER BY ItemId DESC;", table.ToLower()), SQLiteConnection);
                     using (SQLiteDataReader sqlReader = SQLiteCommand.ExecuteReader())
                     {
                         List<SqlItem> items = new List<SqlItem>(32);
@@ -139,12 +147,15 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
-        public bool Initialize(string table)
+        public bool OpenOrCreateTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             string[] tables = GetTables();
             if (tables == null)
                 return false;
@@ -156,6 +167,8 @@ namespace TheAltisProjectDatabase
         }
         public bool InsertItemId(string table, string itemId, string itemData)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsIdValid(itemId))
                 return false;
             if (!IsDataValid(itemData))
@@ -167,7 +180,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("INSERT into {0} (ItemId, ItemData) VALUES ('{1}', '{2}')", table.ToLower(), itemId, itemData);
+                    string commandText = string.Format("INSERT into '{0}' (ItemId, ItemData) VALUES ('{1}', '{2}')", table.ToLower(), itemId.ToLower(), itemData);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -179,19 +192,23 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool UpdateId(string table, Int64 id, string itemId, string itemData)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
-
-                    string commandText = string.Format("UPDATE {0} SET ItemId='{2}' ItemData='{3}' WHERE Id={1}", table, itemId, itemData);
+                    
+                    //string commandText = "UPDATE '" + table + "' SET ItemId='" + itemId + "', ItemData='" + itemData + "' WHERE Id='" + id + "'";
+                    string commandText = string.Format("UPDATE '{0}' SET ItemId='{1}', ItemData='{2}' WHERE Id='{3}'", table.ToLower(), itemId.ToLower(), itemData, id);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -201,12 +218,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool UpdateItemId(string table, string itemId, string itemData)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsIdValid(itemId))
                 return false;
             if (!IsDataValid(itemData))
@@ -218,7 +237,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("UPDATE {0} SET ItemData='{2}' WHERE ItemId='{1}'", table.ToLower(), itemId, itemData);
+                    string commandText = string.Format("UPDATE '{0}' SET ItemData='{2}' WHERE ItemId='{1}'", table.ToLower(), itemId.ToLower(), itemData);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -230,7 +249,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -243,13 +262,16 @@ namespace TheAltisProjectDatabase
         }
         public bool DeleteId(string table, Int64 id)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE Id={1}", table, id);
+                    string commandText = string.Format("DELETE FROM '{0}' WHERE Id={1}", table, id);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -259,12 +281,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool DeleteItemId(string table, string itemId)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsIdValid(itemId))
                 return false;
 
@@ -274,7 +298,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE ItemId='{1}'", table.ToLower(), itemId);
+                    string commandText = string.Format("DELETE FROM '{0}' WHERE ItemId='{1}'", table.ToLower(), itemId.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -286,12 +310,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public string Select(string table, string itemId)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return null;
             if (!IsIdValid(itemId))
                 return null;
 
@@ -301,7 +327,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("SELECT ItemData FROM {0} WHERE ItemId='{1}'", table.ToLower(), itemId);
+                    string commandText = string.Format("SELECT ItemData FROM '{0}' WHERE ItemId='{1}'", table.ToLower(), itemId.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         using (SQLiteDataReader sqlReader = SQLiteCommand.ExecuteReader())
@@ -322,19 +348,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public Result SelectIds(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return null;
+            
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("SELECT ItemId FROM {0}", table.ToLower());
+                    string commandText = string.Format("SELECT ItemId FROM '{0}'", table.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         using (SQLiteDataReader sqlReader = SQLiteCommand.ExecuteReader())
@@ -358,7 +387,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
@@ -366,34 +395,32 @@ namespace TheAltisProjectDatabase
 
     public class DatabaseCargoSQLite : IDatabaseCargo, IDatabaseCargoGui
     {
+        private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseCargoSQLite()
+        public DatabaseCargoSQLite(LogManagerBase logManager)
         {
-            _ConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDbFilename=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.mdf") + ";Integrated Security=True";
+            _LogManager = logManager;
+            _ConnectionString = @"Data Source=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.sqlite") + ";Version=3;UseUTF16Encoding=True;";
         }
 
         private bool CreateTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+            
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = @"
-                            CREATE TABLE [dbo].[" + table.ToLower() + @"] (
-                                [Id]        BIGINT         IDENTITY (1, 1) NOT NULL,
-                                [CargoId]   NVARCHAR (64)  NOT NULL,
-                                [CargoType] NVARCHAR (3)   NOT NULL,
-                                [CargoData] NVARCHAR (256) NOT NULL,
-                                PRIMARY KEY CLUSTERED ([Id] ASC)
-                            );";
+                    string commandText = "CREATE  TABLE 'main'.'" + table.ToLower() + "' ('Id' INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL, 'CargoId' VARCHAR NOT NULL, 'CargoType' VARCHAR NOT NULL, 'CargoData' VARCHAR NOT NULL)";
 
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         SQLiteCommand.ExecuteNonQuery();
-                        LogManager.Write("New table created (Cargo): {0}", table.ToLower());
+                        _LogManager.Error("New table created (Cargo): {0}", table.ToLower());
                         SQLiteConnection.Close();
                         return true;
                     }
@@ -401,7 +428,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
@@ -440,7 +467,8 @@ namespace TheAltisProjectDatabase
                     {
                         List<string> tables = new List<string>(8);
                         foreach (System.Data.DataRow row in schema.Rows)
-                            tables.Add(row[2].ToString());
+                            if (row[2].ToString().ToLower() != "sqlite_sequence")
+                                tables.Add(row[2].ToString());
 
                         SQLiteConnection.Close();
                         return tables.ToArray();
@@ -449,19 +477,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public bool DropTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DROP TABLE {0}", table);
+                    string commandText = string.Format("DROP TABLE '{0}'", table);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -471,12 +502,15 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
-        public bool Initialize(string table)
+        public bool OpenOrCreateTable(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             string[] tables = GetTables();
             if (tables == null)
                 return false;
@@ -488,6 +522,8 @@ namespace TheAltisProjectDatabase
         }
         public bool Insert(string table, string cargoId, string cargoType, string cargoData)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsCargoIdValid(cargoId))
                 return false;
             if (!IsCargoTypeValid(cargoType))
@@ -501,7 +537,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("INSERT into {0} (CargoId, CargoType, CargoData) VALUES ('{1}', '{2}', '{3}')", table.ToLower(), cargoId, cargoType.ToLower(), cargoData);
+                    string commandText = string.Format("INSERT into '{0}' (CargoId, CargoType, CargoData) VALUES ('{1}', '{2}', '{3}')", table.ToLower(), cargoId.ToLower(), cargoType.ToLower(), cargoData);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -513,12 +549,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool DeleteCargoType(string table, string cargoId, string cargoType)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsCargoIdValid(cargoId))
                 return false;
             if (!IsCargoTypeValid(cargoType))
@@ -530,7 +568,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId, cargoType.ToLower());
+                    string commandText = string.Format("DELETE FROM '{0}' WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId.ToLower(), cargoType.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -542,12 +580,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool DeleteCargoId(string table, string cargoId)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
             if (!IsCargoIdValid(cargoId))
                 return false;
 
@@ -557,7 +597,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}'", table.ToLower(), cargoId);
+                    string commandText = string.Format("DELETE FROM '{0}' WHERE CargoId='{1}'", table.ToLower(), cargoId.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -569,19 +609,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public bool DeleteId(string table, Int64 id)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE Id='{1}'", table, id);
+                    string commandText = string.Format("DELETE FROM '{0}' WHERE Id='{1}'", table.ToLower(), id);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -591,12 +634,14 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }
         public Result Select(string table, string cargoId, string cargoType)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return null;
             if (!IsCargoIdValid(cargoId))
                 return null;
             if (!IsCargoTypeValid(cargoType))
@@ -608,7 +653,7 @@ namespace TheAltisProjectDatabase
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("SELECT CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId, cargoType.ToLower());
+                    string commandText = string.Format("SELECT CargoData FROM '{0}' WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId.ToLower(), cargoType.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         List<string> items = new List<string>(8);
@@ -631,19 +676,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public Result SelectIds(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return null;
+            
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("SELECT CargoId FROM {0}", table.ToLower());
+                    string commandText = string.Format("SELECT CargoId FROM '{0}'", table.ToLower());
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         List<string> items = new List<string>(8);
@@ -666,19 +714,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public string[] GetCargoIds(string table)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return new string[0];
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    SQLiteCommand SQLiteCommand = new SQLiteCommand("SELECT DISTINCT CargoId FROM " + table + " ORDER BY CargoId DESC;", SQLiteConnection);
+                    SQLiteCommand SQLiteCommand = new SQLiteCommand("SELECT DISTINCT CargoId FROM '" + table.ToLower() + "' ORDER BY CargoId DESC;", SQLiteConnection);
                     using (SQLiteDataReader sqlReader = SQLiteCommand.ExecuteReader())
                     {
                         List<string> items = new List<string>(32);
@@ -697,19 +748,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public IdStringPair[] GetCargoData(string table, string cargoId, string cargoType)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return new IdStringPair[0];
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    SQLiteCommand SQLiteCommand = new SQLiteCommand(string.Format("SELECT Id, CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}';", table, cargoId, cargoType), SQLiteConnection);
+                    SQLiteCommand SQLiteCommand = new SQLiteCommand(string.Format("SELECT Id, CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}';", table.ToLower(), cargoId.ToLower(), cargoType.ToLower()), SQLiteConnection);
                     using (SQLiteDataReader sqlReader = SQLiteCommand.ExecuteReader())
                     {
                         List<IdStringPair> items = new List<IdStringPair>(32);
@@ -730,19 +784,22 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return null;
             }
         }
         public bool Update(string table, Int64 id, string cargoId, string cargoType, string cargoData)
         {
+            if (string.IsNullOrWhiteSpace(table))
+                return false;
+
             try
             {
                 using (SQLiteConnection SQLiteConnection = new SQLiteConnection(_ConnectionString))
                 {
                     SQLiteConnection.Open();
 
-                    string commandText = string.Format("UPDATE {0} SET CargoId='{1}', CargoType='{2}', CargoData='{3}' WHERE Id={4}", table, cargoId, cargoType, cargoData, id);
+                    string commandText = string.Format("UPDATE '{0}' SET CargoId='{1}', CargoType='{2}', CargoData='{3}' WHERE Id={4}", table.ToLower(), cargoId.ToLower(), cargoType.ToLower(), cargoData, id);
                     using (SQLiteCommand SQLiteCommand = new SQLiteCommand(commandText, SQLiteConnection))
                     {
                         int result = SQLiteCommand.ExecuteNonQuery();
@@ -752,7 +809,7 @@ namespace TheAltisProjectDatabase
             }
             catch (Exception ex)
             {
-                LogManager.Write("Exception: " + ex.Message);
+                _LogManager.Error("Exception: " + ex.Message);
                 return false;
             }
         }

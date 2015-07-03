@@ -56,6 +56,7 @@
             this.tbtnRefreshTable = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnDropTable = new System.Windows.Forms.ToolStripButton();
+            this.tbtnAddTestTable = new System.Windows.Forms.ToolStripButton();
             this.cmbTable = new System.Windows.Forms.ComboBox();
             this.pnlCargoType = new System.Windows.Forms.Panel();
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
@@ -293,6 +294,7 @@
             this.toolStripSeparator1,
             this.tbtnRefreshTable,
             this.toolStripSeparator2,
+            this.tbtnAddTestTable,
             this.tbtnDropTable});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -339,6 +341,17 @@
             this.tbtnDropTable.Size = new System.Drawing.Size(23, 22);
             this.tbtnDropTable.Text = "delete";
             this.tbtnDropTable.Click += new System.EventHandler(this.tbtnDropTable_Click);
+            // 
+            // tbtnAddTestTable
+            // 
+            this.tbtnAddTestTable.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tbtnAddTestTable.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnAddTestTable.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAddTestTable.Image")));
+            this.tbtnAddTestTable.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAddTestTable.Name = "tbtnAddTestTable";
+            this.tbtnAddTestTable.Size = new System.Drawing.Size(23, 22);
+            this.tbtnAddTestTable.Text = "add \"test\" table";
+            this.tbtnAddTestTable.Click += new System.EventHandler(this.tbtnAddTestTable_Click);
             // 
             // cmbTable
             // 
@@ -447,6 +460,7 @@
         private System.Windows.Forms.ToolStrip toolStrip4;
         private System.Windows.Forms.ToolStripLabel toolStripLabel3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton tbtnAddTestTable;
     }
 }
 
