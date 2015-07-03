@@ -8,8 +8,13 @@ namespace TheAltisProjectAddin
 {
     class CargoCommandManager
     {
-        private MsSql.CargoManager.Result _Result = null;
+        private IDatabaseCargo _IDatabaseCargo = null;
+        private IDatabaseCargo.Result _Result = null;
 
+        public CargoCommandManager()
+        {
+            _IDatabaseCargo = new DatabaseCargoMsSql();
+        }
         public string Parse(string[] split)
         {
             try
@@ -28,8 +33,7 @@ namespace TheAltisProjectAddin
                         if (_Result != null)
                             return "ERROR_CARGO_SELECT_ACTIVE";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
-                        _Result = sql.Select(split[3], split[4]);
+                        _Result = _IDatabaseCargo.Select(split[2], split[3], split[4]);
 
                         return "OK";
                     }
@@ -51,8 +55,7 @@ namespace TheAltisProjectAddin
                         if (_Result != null)
                             return "ERROR_CARGO_SELECTIDS_ACTIVE";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
-                        _Result = sql.SelectIds();
+                        _Result = _IDatabaseCargo.SelectIds(split[2]);
 
                         return "OK";
                     }
@@ -104,8 +107,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 6)
                             return "ERROR_CARGO_INSERT_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
-                        if (!sql.Insert(split[3], split[4], split[5]))
+                        if (!_IDatabaseCargo.Insert(split[2], split[3], split[4], split[5]))
                             return "ERROR_CARGO_INSERT";
                         
                         return "OK";
@@ -125,8 +127,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 4)
                             return "ERROR_CARGO_DELETEALL_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
-                        if (!sql.DeleteAll(split[3].ToLower()))
+                        if (!_IDatabaseCargo.DeleteCargoId(split[2], split[3]))
                             return "ERROR_CARGO_DELETEALL";
 
                         return "OK";
@@ -146,8 +147,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 5)
                             return "ERROR_CARGO_DELETETYPE_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2]);
-                        if (!sql.DeleteType(split[3],split[4]))
+                        if (!_IDatabaseCargo.DeleteCargoType(split[2], split[3], split[4]))
                             return "ERROR_CARGO_DELETETYPE";
 
                         return "OK";
@@ -167,8 +167,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 3)
                             return "ERROR_CARGO_INIT_SPLIT_LENGTH";
 
-                        MsSql.CargoManager sql = new MsSql.CargoManager(split[2].ToLower());
-                        if (!sql.Initialize())
+                        if (!_IDatabaseCargo.Initialize(split[2]))
                             return "ERROR_CARGO_INIT";
 
                         return "OK";

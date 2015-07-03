@@ -8,7 +8,13 @@ namespace TheAltisProjectAddin
 {
     class ItemCommandManager
     {
-        private MsSql.ItemManager.Result _Result = null;
+        private IDatabaseItem _IDatabaseItem;
+        private IDatabaseItem.Result _Result = null;
+
+        public ItemCommandManager()
+        {
+            _IDatabaseItem = new DatabaseItemMsSql();
+        }
 
         public string Parse(string[] split)
         {
@@ -56,8 +62,7 @@ namespace TheAltisProjectAddin
                         if (_Result != null)
                             return "ERROR_CARGO_SELECTIDS_ACTIVE";
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2]);
-                        _Result = sql.SelectIds();
+                        _Result = _IDatabaseItem.SelectIds(split[2]);
 
                         return "OK";
                     }
@@ -109,8 +114,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 5)
                             return "ERROR_ITEM_UPDATE_SPLIT_LENGTH";
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2].ToLower());
-                        if (!sql.Update(split[3], split[4]))
+                        if (!IDatabaseItem.UpdateItemId(split[2], split[3], split[4]))
                             return "ERROR_ITEM_UPDATE";
                         
                         return "OK";
@@ -130,8 +134,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 5)
                             return "ERROR_ITEM_UPDATEINSERT_SPLIT_LENGTH";
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2].ToLower());
-                        if (!sql.UpdateOrInsert(split[3], split[4]))
+                        if (!IDatabaseItem.UpdateOrInsertItemId(split[2], split[3], split[4]))
                             return "ERROR_ITEM_UPDATEINSERT";
                         
                         return "OK";
@@ -151,8 +154,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 3)
                             return "ERROR_ITEM_INIT_SPLIT_LENGTH";
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2].ToLower());
-                        if (!sql.Initialize())
+                        if (!IDatabaseItem.Initialize(split[2]))
                             return "ERROR_ITEM_INIT";
 
                         return "OK";
@@ -172,8 +174,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 4)
                             return "ERROR_ITEM_DELETE_SPLIT_LENGTH";
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2].ToLower());
-                        if (!sql.Delete(split[3]))
+                        if (!IDatabaseItem.DeleteItemId(split[2], split[3]))
                             return "ERROR_ITEM_DELETE";
 
                         return "OK";

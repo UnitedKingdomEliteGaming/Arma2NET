@@ -13,12 +13,13 @@ namespace TheAltisProjectEditorCargo
 {
     public partial class FormMain : Form
     {
+        TheAltisProjectAddin.IDatabaseCargoGui _IDatabase;
 
         public FormMain()
         {
             InitializeComponent();
 
-            MsSql.Init();
+            _IDatabase = new TheAltisProjectAddin.DatabaseCargoMsSql();
 
             cmbCargoType.SelectedIndex = 0;
             RefreshComboboxTable();
@@ -38,7 +39,7 @@ namespace TheAltisProjectEditorCargo
             cmbTable.Text = "";
             cmbTable.Items.Clear();
             tbtnDropTable.Enabled = false;
-            string[] tables = MsSql.GetTables();
+            string[] tables = _IDatabase.GetTables();
             foreach (string table in tables)
             {
                 cmbTable.Items.Add(table);
@@ -48,7 +49,7 @@ namespace TheAltisProjectEditorCargo
         }
         private void RefreshListCargoId()
         {
-            string[] cargoIds = MsSql.GetCargoIds(SelectedTable);
+            string[] cargoIds = _IDatabase.GetCargoIds(SelectedTable);
             lstCargoId.SelectedIndex = -1;
             lstCargoId.Items.Clear();
             if (cargoIds != null)
@@ -65,11 +66,11 @@ namespace TheAltisProjectEditorCargo
             lstCargoData.Items.Clear();
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3))
             {
-                MsSql.IdStringPair[] cargoDatas = MsSql.GetCargoData(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
+                TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair[] cargoDatas = _IDatabase.GetCargoData(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
                 lstCargoData.Items.Clear();
                 if (cargoDatas != null)
                 {
-                    foreach (MsSql.IdStringPair cargoData in cargoDatas)
+                    foreach (TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair cargoData in cargoDatas)
                         lstCargoData.Items.Add(cargoData);
                 }
                 tbtnDeleteCargoDataType.Enabled = lstCargoData.Items.Count > 0;
@@ -82,7 +83,7 @@ namespace TheAltisProjectEditorCargo
             {
                 if (MessageBox.Show("Wollen Sie wirklich den Table " + SelectedTable + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    MsSql.DropTable(SelectedTable);
+                    _IDatabase.DropTable(SelectedTable);
                     RefreshComboboxTable();
                 }
             }
@@ -98,7 +99,7 @@ namespace TheAltisProjectEditorCargo
             {
                 if (MessageBox.Show("Wollen Sie wirklich alle Einträge dieser Cargo Id löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    MsSql.DeleteCargoId(SelectedTable, (lstCargoId.SelectedItem as string));
+                    _IDatabase.DeleteCargoId(SelectedTable, (lstCargoId.SelectedItem as string));
                     RefreshListCargoId();
                 }
             }
@@ -122,8 +123,8 @@ namespace TheAltisProjectEditorCargo
             string cargoData = "";
             if (lstCargoData.SelectedItem != null)
             {
-                id = (lstCargoData.SelectedItem as MsSql.IdStringPair).Id;
-                cargoData = (lstCargoData.SelectedItem as MsSql.IdStringPair).Text;
+                id = (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Id;
+                cargoData = (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Text;
             }
 
             if (EditDialog.ExecuteDialog_Update(SelectedTable, id, cargoId, cargoType, cargoData) != "")
@@ -152,9 +153,9 @@ namespace TheAltisProjectEditorCargo
         {
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3) && (lstCargoData.SelectedItem != null))
             {
-                if (MessageBox.Show("Wollen Sie wirklich den Eintrag " + (lstCargoData.SelectedItem as MsSql.IdStringPair).Text + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                if (MessageBox.Show("Wollen Sie wirklich den Eintrag " + (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Text + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    MsSql.DeleteCargoSingle(SelectedTable, (lstCargoData.SelectedItem as MsSql.IdStringPair).Id);
+                    _IDatabase.DeleteId(SelectedTable, (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Id);
                     RefreshListCargoData();
                 }
             }
@@ -165,7 +166,7 @@ namespace TheAltisProjectEditorCargo
             {
                 if (MessageBox.Show("Wollen Sie wirklich alle Einträge in der Liste löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    MsSql.DeleteCargoType(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
+                    _IDatabase.DeleteCargoType(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
                     RefreshListCargoData();
                 }
             }

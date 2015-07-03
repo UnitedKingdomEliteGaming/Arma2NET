@@ -12,11 +12,14 @@ namespace TheAltisProjectEditorItem
 {
     public partial class FormMain : Form
     {
+        TheAltisProjectAddin.IDatabaseItemGui _IDatabase;
+
         public FormMain()
         {
             InitializeComponent();
 
-            MsSql.Init();
+            _IDatabase = new TheAltisProjectAddin.DatabaseItemMsSql();               
+
             RefreshComboboxTable();
         }
 
@@ -27,12 +30,12 @@ namespace TheAltisProjectEditorItem
                 return cmbTable.SelectedItem as string;
             }
         }
-        private MsSql.SqlItem SelectedItem
+        private TheAltisProjectAddin.IDatabaseItemGui.SqlItem SelectedItem
         {
             get
             {
                 if (lvwItems.SelectedItems.Count == 1)
-                    return lvwItems.SelectedItems[0].Tag as MsSql.SqlItem;
+                    return lvwItems.SelectedItems[0].Tag as TheAltisProjectAddin.IDatabaseItemGui.SqlItem;
                 else
                     return null;
             }
@@ -43,7 +46,7 @@ namespace TheAltisProjectEditorItem
             cmbTable.Text = "";
             cmbTable.Items.Clear();
             tbtnDropTable.Enabled = false;
-            string[] tables = MsSql.GetTables();
+            string[] tables = _IDatabase.GetTables();
             foreach (string table in tables)
             {
                 cmbTable.Items.Add(table);
@@ -56,10 +59,10 @@ namespace TheAltisProjectEditorItem
             lvwItems.Items.Clear();
 
             tbtnAddItem.Enabled = !string.IsNullOrWhiteSpace(SelectedTable);
-            MsSql.SqlItem[] sqlItems = MsSql.GetItems(SelectedTable);
+            TheAltisProjectAddin.IDatabaseItemGui.SqlItem[] sqlItems = _IDatabase.GetItems(SelectedTable);
             if (sqlItems != null)
             {
-                foreach (MsSql.SqlItem sqlItem in sqlItems)
+                foreach (TheAltisProjectAddin.IDatabaseItemGui.SqlItem sqlItem in sqlItems)
                     lvwItems.Items.Add(new ListViewItem(new string[] { sqlItem.ItemId, sqlItem.ItemData })).Tag = sqlItem;
             }
         }
@@ -124,7 +127,7 @@ namespace TheAltisProjectEditorItem
             string table = cmbTable.Text;
             if (MessageBox.Show("Wollen Sie wirklich die TABELLE '" + table + "' unwiederruflich löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
-                MsSql.DropTable(table);
+                _IDatabase.DropTable(table);
                 RefreshComboboxTable();
             }
         }
@@ -138,7 +141,7 @@ namespace TheAltisProjectEditorItem
             {
                 if (MessageBox.Show("Wollen Sie wirklich den Eintrag '" + SelectedItem.ItemId + "' unwiederruflich löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    MsSql.Delete(SelectedTable, SelectedItem.Id);
+                    _IDatabase.DeleteId(SelectedTable, SelectedItem.Id);
                     RefreshListviewItems();
                     tbtnDeleteItem.Enabled = false;
                 }
@@ -154,7 +157,7 @@ namespace TheAltisProjectEditorItem
         }
         private void tbtnEditItem_Click(object sender, EventArgs e)
         {
-            MsSql.SqlItem sqlItem = SelectedItem;
+            TheAltisProjectAddin.IDatabaseItemGui.SqlItem sqlItem = SelectedItem;
             if (sqlItem != null)
             {
                 if (EditDialog.ExecuteDialog_Update(SelectedTable, sqlItem.Id, sqlItem.ItemId, sqlItem.ItemData) != "")
