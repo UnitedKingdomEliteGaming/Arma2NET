@@ -12,13 +12,13 @@ namespace TheAltisProjectEditorItem
 {
     public partial class FormMain : Form
     {
-        TheAltisProjectAddin.IDatabaseItemGui _IDatabase;
+        TheAltisProjectDatabase.IDatabaseItemGui _IDatabase;
 
         public FormMain()
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectAddin.DatabaseItemMsSql();               
+            _IDatabase = new TheAltisProjectDatabase.DatabaseItemMsSql();               
 
             RefreshComboboxTable();
         }
@@ -30,12 +30,12 @@ namespace TheAltisProjectEditorItem
                 return cmbTable.SelectedItem as string;
             }
         }
-        private TheAltisProjectAddin.IDatabaseItemGui.SqlItem SelectedItem
+        private TheAltisProjectDatabase.SqlItem SelectedItem
         {
             get
             {
                 if (lvwItems.SelectedItems.Count == 1)
-                    return lvwItems.SelectedItems[0].Tag as TheAltisProjectAddin.IDatabaseItemGui.SqlItem;
+                    return lvwItems.SelectedItems[0].Tag as TheAltisProjectDatabase.SqlItem;
                 else
                     return null;
             }
@@ -59,10 +59,10 @@ namespace TheAltisProjectEditorItem
             lvwItems.Items.Clear();
 
             tbtnAddItem.Enabled = !string.IsNullOrWhiteSpace(SelectedTable);
-            TheAltisProjectAddin.IDatabaseItemGui.SqlItem[] sqlItems = _IDatabase.GetItems(SelectedTable);
+            TheAltisProjectDatabase.SqlItem[] sqlItems = _IDatabase.GetItems(SelectedTable);
             if (sqlItems != null)
             {
-                foreach (TheAltisProjectAddin.IDatabaseItemGui.SqlItem sqlItem in sqlItems)
+                foreach (TheAltisProjectDatabase.SqlItem sqlItem in sqlItems)
                     lvwItems.Items.Add(new ListViewItem(new string[] { sqlItem.ItemId, sqlItem.ItemData })).Tag = sqlItem;
             }
         }
@@ -149,7 +149,7 @@ namespace TheAltisProjectEditorItem
         }
         private void tbtnAddItem_Click(object sender, EventArgs e)
         {
-            if (EditDialog.ExecuteDialog_Insert(SelectedTable) != "")
+            if (EditDialog.ExecuteDialog_Insert(_IDatabase, SelectedTable) != "")
             {
                 RefreshListviewItems();
                 lvwItems.SelectedIndices.Add(0);
@@ -157,10 +157,10 @@ namespace TheAltisProjectEditorItem
         }
         private void tbtnEditItem_Click(object sender, EventArgs e)
         {
-            TheAltisProjectAddin.IDatabaseItemGui.SqlItem sqlItem = SelectedItem;
+            TheAltisProjectDatabase.SqlItem sqlItem = SelectedItem;
             if (sqlItem != null)
             {
-                if (EditDialog.ExecuteDialog_Update(SelectedTable, sqlItem.Id, sqlItem.ItemId, sqlItem.ItemData) != "")
+                if (EditDialog.ExecuteDialog_Update(_IDatabase, SelectedTable, sqlItem.Id, sqlItem.ItemId, sqlItem.ItemData) != "")
                 {
                     int index = lvwItems.SelectedIndices[0];
                     RefreshListviewItems();

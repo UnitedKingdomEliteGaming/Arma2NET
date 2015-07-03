@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheAltisProjectDatabase;
 
 namespace TheAltisProjectAddin
 {
     class ItemCommandManager
     {
         private IDatabaseItem _IDatabaseItem;
-        private IDatabaseItem.Result _Result = null;
+        private Result _Result = null;
 
         public ItemCommandManager()
         {
@@ -34,8 +35,7 @@ namespace TheAltisProjectAddin
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
-                        MsSql.ItemManager sql = new MsSql.ItemManager(split[2].ToLower());
-                        string result = sql.Select(split[3]);
+                        string result = _IDatabaseItem.Select(split[2], split[3]);
                         if (result == null)
                         {
                             Arma2Net.Utils.Log("ERROR: Item.Select ERROR_ITEM_SELECT_NULL");
@@ -114,7 +114,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 5)
                             return "ERROR_ITEM_UPDATE_SPLIT_LENGTH";
 
-                        if (!IDatabaseItem.UpdateItemId(split[2], split[3], split[4]))
+                        if (!_IDatabaseItem.UpdateItemId(split[2], split[3], split[4]))
                             return "ERROR_ITEM_UPDATE";
                         
                         return "OK";
@@ -134,7 +134,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 5)
                             return "ERROR_ITEM_UPDATEINSERT_SPLIT_LENGTH";
 
-                        if (!IDatabaseItem.UpdateOrInsertItemId(split[2], split[3], split[4]))
+                        if (!_IDatabaseItem.UpdateOrInsertItemId(split[2], split[3], split[4]))
                             return "ERROR_ITEM_UPDATEINSERT";
                         
                         return "OK";
@@ -154,7 +154,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 3)
                             return "ERROR_ITEM_INIT_SPLIT_LENGTH";
 
-                        if (!IDatabaseItem.Initialize(split[2]))
+                        if (!_IDatabaseItem.Initialize(split[2]))
                             return "ERROR_ITEM_INIT";
 
                         return "OK";
@@ -174,7 +174,7 @@ namespace TheAltisProjectAddin
                         if (split.Length < 4)
                             return "ERROR_ITEM_DELETE_SPLIT_LENGTH";
 
-                        if (!IDatabaseItem.DeleteItemId(split[2], split[3]))
+                        if (!_IDatabaseItem.DeleteItemId(split[2], split[3]))
                             return "ERROR_ITEM_DELETE";
 
                         return "OK";

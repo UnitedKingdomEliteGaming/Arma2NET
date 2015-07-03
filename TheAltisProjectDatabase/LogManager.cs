@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TheAltisProjectAddin
+namespace TheAltisProjectDatabase
 {
     public static class LogManager
     {

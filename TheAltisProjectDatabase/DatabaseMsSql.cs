@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 
-namespace TheAltisProjectAddin
+namespace TheAltisProjectDatabase
 {
     public class DatabaseItemMsSql : IDatabaseItem, IDatabaseItemGui
     {
@@ -108,7 +108,7 @@ namespace TheAltisProjectAddin
                 return false;
             }
         }
-        public IDatabaseItemGui.SqlItem[] GetItems(string table)
+        public SqlItem[] GetItems(string table)
         {
             try
             {
@@ -119,7 +119,7 @@ namespace TheAltisProjectAddin
                     SqlCommand sqlCommand = new SqlCommand(string.Format("SELECT Id, ItemId, ItemData FROM {0} ORDER BY ItemId DESC;", table), sqlConnection);
                     using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
                     {
-                        List<IDatabaseItemGui.SqlItem> items = new List<IDatabaseItemGui.SqlItem>(32);
+                        List<SqlItem> items = new List<SqlItem>(32);
 
                         while (sqlReader.Read())
                         {
@@ -130,7 +130,7 @@ namespace TheAltisProjectAddin
                             if (sqlReader.IsDBNull(2))
                                 return null;
 
-                            items.Add(new IDatabaseItemGui.SqlItem(sqlReader.GetInt64(0), sqlReader.GetString(1), sqlReader.GetString(2)));
+                            items.Add(new SqlItem(sqlReader.GetInt64(0), sqlReader.GetString(1), sqlReader.GetString(2)));
                         }
 
                         return items.ToArray();
@@ -326,7 +326,7 @@ namespace TheAltisProjectAddin
                 return null;
             }
         }
-        public IDatabaseItem.Result SelectIds(string table)
+        public Result SelectIds(string table)
         {
             try
             {
@@ -349,7 +349,7 @@ namespace TheAltisProjectAddin
                             }
 
                             //Arma2Net.Utils.Log(commandText + ": " + result);
-                            IDatabaseItem.Result result = new IDatabaseItem.Result(results.ToArray());
+                            Result result = new Result(results.ToArray());
                             sqlConnection.Close();
                             return result;
                         }
@@ -472,25 +472,18 @@ namespace TheAltisProjectAddin
                 return false;
             }
         }
-        public bool DeleteCargoType(string table, string cargoId, string cargoType)
+        public bool DeleteId(string table, Int64 id)
         {
-            if (!IsCargoIdValid(cargoId))
-                return false;
-            if (!IsCargoTypeValid(cargoType))
-                return false;
-
             try
             {
                 using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
                 {
                     sqlConnection.Open();
 
-                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId, cargoType.ToLower());
+                    string commandText = string.Format("DELETE FROM {0} WHERE Id='{1}'", table, id);
                     using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
                     {
                         int result = sqlCommand.ExecuteNonQuery();
-                        //Arma2Net.Utils.Log(commandText + ": " + result);
-                        sqlConnection.Close();
                         return true;
                     }
                 }
@@ -528,7 +521,36 @@ namespace TheAltisProjectAddin
                 return false;
             }
         }
-        public IDatabaseCargo.Result Select(string table, string cargoId, string cargoType)
+        public bool DeleteCargoType(string table, string cargoId, string cargoType)
+        {
+            if (!IsCargoIdValid(cargoId))
+                return false;
+            if (!IsCargoTypeValid(cargoType))
+                return false;
+
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
+                {
+                    sqlConnection.Open();
+
+                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table.ToLower(), cargoId, cargoType.ToLower());
+                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
+                    {
+                        int result = sqlCommand.ExecuteNonQuery();
+                        //Arma2Net.Utils.Log(commandText + ": " + result);
+                        sqlConnection.Close();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogManager.Write("Exception: " + ex.Message);
+                return false;
+            }
+        }
+        public Result Select(string table, string cargoId, string cargoType)
         {
             if (!IsCargoIdValid(cargoId))
                 return null;
@@ -555,7 +577,7 @@ namespace TheAltisProjectAddin
                                 items.Add(sqlReader.GetString(0));
                             }
 
-                            IDatabaseCargo.Result result = new IDatabaseCargo.Result(items.ToArray());
+                            Result result = new Result(items.ToArray());
                             sqlConnection.Close();
                             return result;
                         }
@@ -568,7 +590,7 @@ namespace TheAltisProjectAddin
                 return null;
             }
         }
-        public IDatabaseCargo.Result SelectIds(string table)
+        public Result SelectIds(string table)
         {
             try
             {
@@ -590,7 +612,7 @@ namespace TheAltisProjectAddin
                                 items.Add(sqlReader.GetString(0));
                             }
 
-                            IDatabaseCargo.Result result = new IDatabaseCargo.Result(items.ToArray());
+                            Result result = new Result(items.ToArray());
                             sqlConnection.Close();
                             return result;
                         }
@@ -682,7 +704,7 @@ namespace TheAltisProjectAddin
                 return null;
             }
         }
-        public IDatabaseCargoGui.IdStringPair[] GetCargoData(string table, string cargoId, string cargoType)
+        public IdStringPair[] GetCargoData(string table, string cargoId, string cargoType)
         {
             try
             {
@@ -693,7 +715,7 @@ namespace TheAltisProjectAddin
                     SqlCommand sqlCommand = new SqlCommand(string.Format("SELECT Id, CargoData FROM {0} WHERE CargoId='{1}' AND CargoType='{2}';", table, cargoId, cargoType), sqlConnection);
                     using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
                     {
-                        List<IDatabaseCargoGui.IdStringPair> items = new List<IDatabaseCargoGui.IdStringPair>(32);
+                        List<IdStringPair> items = new List<IdStringPair>(32);
 
                         while (sqlReader.Read())
                         {
@@ -702,7 +724,7 @@ namespace TheAltisProjectAddin
                             if (sqlReader.IsDBNull(1))
                                 return null;
 
-                            items.Add(new IDatabaseCargoGui.IdStringPair(sqlReader.GetInt64(0), sqlReader.GetString(1)));
+                            items.Add(new IdStringPair(sqlReader.GetInt64(0), sqlReader.GetString(1)));
                         }
 
                         return items.ToArray();
@@ -713,94 +735,6 @@ namespace TheAltisProjectAddin
             {
                 LogManager.Write("Exception: " + ex.Message);
                 return null;
-            }
-        }
-        public bool DeleteCargoType(string table, string cargoId, string cargoType)
-        {
-            try
-            {
-                using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
-                {
-                    sqlConnection.Open();
-
-                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}' AND CargoType='{2}'", table, cargoId, cargoType);
-                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
-                    {
-                        int result = sqlCommand.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Write("Exception: " + ex.Message);
-                return false;
-            }
-        }
-        public bool DeleteCargoSingle(string table, Int64 id)
-        {
-            try
-            {
-                using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
-                {
-                    sqlConnection.Open();
-
-                    string commandText = string.Format("DELETE FROM {0} WHERE Id='{1}'", table, id);
-                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
-                    {
-                        int result = sqlCommand.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Write("Exception: " + ex.Message);
-                return false;
-            }
-        }
-        public bool DeleteCargoId(string table, string cargoId)
-        {
-            try
-            {
-                using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
-                {
-                    sqlConnection.Open();
-
-                    string commandText = string.Format("DELETE FROM {0} WHERE CargoId='{1}'", table, cargoId);
-                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
-                    {
-                        int result = sqlCommand.ExecuteNonQuery();
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Write("Exception: " + ex.Message);
-                return false;
-            }
-        }
-        public bool Insert(string table, string cargoId, string cargoType, string cargoData)
-        {
-            try
-            {
-                using (SqlConnection sqlConnection = new SqlConnection(_ConnectionString))
-                {
-                    sqlConnection.Open();
-
-                    string commandText = string.Format("INSERT into {0} (CargoId, CargoType, CargoData) VALUES ('{1}', '{2}', '{3}')", table, cargoId, cargoType, cargoData);
-                    using (SqlCommand sqlCommand = new SqlCommand(commandText, sqlConnection))
-                    {
-                        int result = sqlCommand.ExecuteNonQuery();
-                        return (result == 1);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogManager.Write("Exception: " + ex.Message);
-                return false;
             }
         }
         public bool Update(string table, Int64 id, string cargoId, string cargoType, string cargoData)
@@ -825,6 +759,5 @@ namespace TheAltisProjectAddin
                 return false;
             }
         }
-
     }
 }

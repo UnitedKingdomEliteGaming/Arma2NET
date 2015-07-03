@@ -13,13 +13,13 @@ namespace TheAltisProjectEditorCargo
 {
     public partial class FormMain : Form
     {
-        TheAltisProjectAddin.IDatabaseCargoGui _IDatabase;
+        TheAltisProjectDatabase.IDatabaseCargoGui _IDatabase;
 
         public FormMain()
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectAddin.DatabaseCargoMsSql();
+            _IDatabase = new TheAltisProjectDatabase.DatabaseCargoMsSql();
 
             cmbCargoType.SelectedIndex = 0;
             RefreshComboboxTable();
@@ -66,11 +66,11 @@ namespace TheAltisProjectEditorCargo
             lstCargoData.Items.Clear();
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3))
             {
-                TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair[] cargoDatas = _IDatabase.GetCargoData(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
+                TheAltisProjectDatabase.IdStringPair[] cargoDatas = _IDatabase.GetCargoData(SelectedTable, (lstCargoId.SelectedItem as string), cmbCargoType.Text);
                 lstCargoData.Items.Clear();
                 if (cargoDatas != null)
                 {
-                    foreach (TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair cargoData in cargoDatas)
+                    foreach (TheAltisProjectDatabase.IdStringPair cargoData in cargoDatas)
                         lstCargoData.Items.Add(cargoData);
                 }
                 tbtnDeleteCargoDataType.Enabled = lstCargoData.Items.Count > 0;
@@ -123,11 +123,11 @@ namespace TheAltisProjectEditorCargo
             string cargoData = "";
             if (lstCargoData.SelectedItem != null)
             {
-                id = (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Id;
-                cargoData = (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Text;
+                id = (lstCargoData.SelectedItem as TheAltisProjectDatabase.IdStringPair).Id;
+                cargoData = (lstCargoData.SelectedItem as TheAltisProjectDatabase.IdStringPair).Text;
             }
 
-            if (EditDialog.ExecuteDialog_Update(SelectedTable, id, cargoId, cargoType, cargoData) != "")
+            if (EditDialog.ExecuteDialog_Update(_IDatabase, SelectedTable, id, cargoId, cargoType, cargoData) != "")
                 RefreshListCargoData();
         }
         private void tbtnAddCargoData_Click(object sender, EventArgs e)
@@ -140,7 +140,7 @@ namespace TheAltisProjectEditorCargo
             if (cmbCargoType.Text.Length ==3) 
                 cargoType = cmbCargoType.Text;
 
-            string addedCargoId = EditDialog.ExecuteDialog_Insert(SelectedTable, cargoId, cargoType);
+            string addedCargoId = EditDialog.ExecuteDialog_Insert(_IDatabase, SelectedTable, cargoId, cargoType);
             if (addedCargoId != "")
             {
                 if (addedCargoId == cargoId)
@@ -153,9 +153,9 @@ namespace TheAltisProjectEditorCargo
         {
             if ((lstCargoId.SelectedItem != null) && (cmbCargoType.Text.Length == 3) && (lstCargoData.SelectedItem != null))
             {
-                if (MessageBox.Show("Wollen Sie wirklich den Eintrag " + (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Text + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+                if (MessageBox.Show("Wollen Sie wirklich den Eintrag " + (lstCargoData.SelectedItem as TheAltisProjectDatabase.IdStringPair).Text + " löschen?", "Achtung", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    _IDatabase.DeleteId(SelectedTable, (lstCargoData.SelectedItem as TheAltisProjectAddin.IDatabaseCargoGui.IdStringPair).Id);
+                    _IDatabase.DeleteId(SelectedTable, (lstCargoData.SelectedItem as TheAltisProjectDatabase.IdStringPair).Id);
                     RefreshListCargoData();
                 }
             }

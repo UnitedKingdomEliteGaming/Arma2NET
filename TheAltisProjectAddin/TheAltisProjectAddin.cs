@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 namespace TheAltisProjectAddin
 {
     [Arma2Net.Addin("Tap", Version = "1.0", Author = "Pixinger", Description = "TheAltisProjectDatabase")]
-    public class PersistentCampaign2 : Arma2Net.Addin, IDisposable
+    public class TheAltisProjectAddin : Arma2Net.Addin, IDisposable
     {
         private ItemCommandManager _ItemCommandManager = new ItemCommandManager();
         private CargoCommandManager _CargoCommandManager = new CargoCommandManager();
 
-        public PersistentCampaign2()
+        public TheAltisProjectAddin()
         {
-            MsSql.Init();
         }
 
         #region IDisposable Member
-        ~PersistentCampaign2()
+        ~TheAltisProjectAddin()
         {
             Dispose(false);
         }

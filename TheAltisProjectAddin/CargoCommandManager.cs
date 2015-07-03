@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheAltisProjectDatabase;
 
 namespace TheAltisProjectAddin
 {
     class CargoCommandManager
     {
         private IDatabaseCargo _IDatabaseCargo = null;
-        private IDatabaseCargo.Result _Result = null;
+        private Result _Result = null;
 
         public CargoCommandManager()
         {

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TheAltisProjectAddin</RootNamespace>
     <AssemblyName>TheAltisProjectAddin</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -26,6 +26,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -74,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ItemCommandManager.cs" />
-    <Compile Include="MsSql.cs" />
     <Compile Include="TheAltisProjectAddin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CargoCommandManager.cs" />
@@ -84,6 +84,10 @@
       <Project>{8d2448b2-b12a-4c5d-b2ee-f6717a6918c9}</Project>
       <Name>Arma2Net</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TheAltisProjectDatabase\TheAltisProjectDatabase.csproj">
+      <Project>{045987a7-f6ff-46de-a118-e4372c7b49e2}</Project>
+      <Name>TheAltisProjectDatabase</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -102,22 +106,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DatabaseCargo.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DatabaseCargo_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>DatabaseCargo.mdf</DependentUpon>
-    </Content>
-    <Content Include="DatabaseItem.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DatabaseItem_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>DatabaseItem.mdf</DependentUpon>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
