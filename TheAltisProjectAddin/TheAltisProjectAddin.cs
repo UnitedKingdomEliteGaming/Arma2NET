@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TheAltisProjectAddin
 {
-    [Arma2Net.Addin("Tap", Version = "1.0", Author = "Pixinger", Description = "TheAltisProjectDatabase")]
+    [Arma2Net.Addin("Tap", Version = "1.1", Author = "Pixinger", Description = "TheAltisProjectDatabase")]
     public class TheAltisProjectAddin : Arma2Net.Addin, IDisposable
     {
         private ItemCommandManager _ItemCommandManager = new ItemCommandManager();

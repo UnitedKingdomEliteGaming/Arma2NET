@@ -18,7 +18,7 @@ namespace TheAltisProjectEditorItem
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectDatabase.DatabaseItemSQLite(new LogManager());
+            _IDatabase = new TheAltisProjectDatabase.DatabaseItemSQLite(new LogManager(), "..\\DatabaseItem.sqlite");
 
             RefreshComboboxTable();
         }

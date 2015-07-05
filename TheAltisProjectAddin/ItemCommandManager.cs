@@ -14,7 +14,27 @@ namespace TheAltisProjectAddin
 
         public ItemCommandManager()
         {
-            _IDatabaseItem = new DatabaseItemMsSql(new LogManager());
+            _IDatabaseItem = new DatabaseItemSQLite(new LogManager(), System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.sqlite"));
+        }
+
+        private string SplitToString(string[] split)
+        {
+            if (split == null)
+                return "split==null";
+            if (split.Length == 0)
+                return "split.Length==0";
+
+            string result = "";
+            for (int i = 0; i < split.Length; i++)
+            {
+                result += i.ToString() + "(";
+                if (split[i] != null)
+                    result += split[i] + ") ";
+                else
+                    result += "null) ";
+            }
+
+            return result;
         }
 
         public string Parse(string[] split)
@@ -31,14 +51,14 @@ namespace TheAltisProjectAddin
                     {
                         if (split.Length < 4)
                         {
-                            Arma2Net.Utils.Log("ERROR: Item.Select ERROR_ITEM_SELECT_SPLIT_LENGTH");
+                            Arma2Net.Utils.Log("ERROR: Item.Select ERROR_ITEM_SELECT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
                         string result = _IDatabaseItem.Select(split[2], split[3]);
                         if (result == null)
                         {
-                            Arma2Net.Utils.Log("ERROR: Item.Select ERROR_ITEM_SELECT_NULL");
+                            Arma2Net.Utils.Log("ERROR_ITEM_SELECT: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
@@ -57,11 +77,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 3)
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_SELECTIDS_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_ITEM_SELECTIDS_SPLIT_LENGTH";
-
+                        }
                         if (_Result != null)
-                            return "ERROR_CARGO_SELECTIDS_ACTIVE";
-
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_SELECTIDS_ACTIVE: Split=" + SplitToString(split));
+                            return "ERROR_ITEM_SELECTIDS_ACTIVE";
+                        }
                         _Result = _IDatabaseItem.SelectIds(split[2]);
 
                         return "OK";
@@ -80,13 +104,13 @@ namespace TheAltisProjectAddin
                     {
                         if (split.Length < 2)
                         {
-                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_SPLIT_LENGTH");
+                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
                         if (_Result == null)
                         {
-                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_INACTIVE");
+                            Arma2Net.Utils.Log("ERROR: ITEM.Selectnext ERROR_ITEM_SELECTNEXT_INACTIVE: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
@@ -112,11 +136,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 5)
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_UPDATE_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_ITEM_UPDATE_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseItem.UpdateItemId(split[2], split[3], split[4]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_UPDATE: Split=" + SplitToString(split));
                             return "ERROR_ITEM_UPDATE";
-                        
+                        }
                         return "OK";
                     }
                     catch (Exception ex)
@@ -132,11 +160,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 5)
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_UPDATEINSERT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_ITEM_UPDATEINSERT_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseItem.UpdateOrInsertItemId(split[2], split[3], split[4]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_UPDATEINSERT: Split=" + SplitToString(split));
                             return "ERROR_ITEM_UPDATEINSERT";
-                        
+                        }
                         return "OK";
                     }
                     catch (Exception ex)
@@ -152,11 +184,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 3)
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_INIT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_ITEM_INIT_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseItem.OpenOrCreateTable(split[2]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_INIT: Split=" + SplitToString(split));
                             return "ERROR_ITEM_INIT";
-
+                        }
                         return "OK";
                     }
                     catch (Exception ex)
@@ -172,11 +208,16 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 4)
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_DELETE_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_ITEM_DELETE_SPLIT_LENGTH";
+                        }
 
                         if (!_IDatabaseItem.DeleteItemId(split[2], split[3]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_ITEM_DELETE: Split=" + SplitToString(split));
                             return "ERROR_ITEM_DELETE";
-
+                        }
                         return "OK";
                     }
                     catch (Exception ex)

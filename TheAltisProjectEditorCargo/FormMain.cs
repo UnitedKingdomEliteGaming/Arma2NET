@@ -19,7 +19,7 @@ namespace TheAltisProjectEditorCargo
         {
             InitializeComponent();
 
-            _IDatabase = new TheAltisProjectDatabase.DatabaseCargoSQLite(new LogManager());
+            _IDatabase = new TheAltisProjectDatabase.DatabaseCargoSQLite(new LogManager(), "..\\DatabaseCargo.sqlite");
 
             cmbCargoType.SelectedIndex = 0;
             RefreshComboboxTable();

@@ -14,8 +14,29 @@ namespace TheAltisProjectAddin
 
         public CargoCommandManager()
         {
-            _IDatabaseCargo = new DatabaseCargoMsSql(new LogManager());
+            _IDatabaseCargo = new DatabaseCargoSQLite(new LogManager(), System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.sqlite"));
         }
+
+        private string SplitToString(string[] split)
+        {
+            if (split == null)
+                return "split==null";
+            if (split.Length == 0)
+                return "split.Length==0";
+
+            string result = "";
+            for (int i = 0; i < split.Length; i++)
+            {
+                result += i.ToString() + "(";
+                if (split[i] != null)
+                    result += split[i] + ") ";
+                else
+                    result += "null) ";
+            }
+
+            return result;
+        }
+        
         public string Parse(string[] split)
         {
             try
@@ -29,10 +50,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 5)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_SELECT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_SELECT_SPLIT_LENGTH";
-
+                        }
                         if (_Result != null)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_SELECT_ACTIVE: Split=" + SplitToString(split));
                             return "ERROR_CARGO_SELECT_ACTIVE";
+                        }
 
                         _Result = _IDatabaseCargo.Select(split[2], split[3], split[4]);
 
@@ -51,10 +77,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 3)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_SELECTIDS_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_SELECTIDS_SPLIT_LENGTH";
-
+                        }
                         if (_Result != null)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_SELECTIDS_ACTIVE: Split=" + SplitToString(split));
                             return "ERROR_CARGO_SELECTIDS_ACTIVE";
+                        }
 
                         _Result = _IDatabaseCargo.SelectIds(split[2]);
 
@@ -74,13 +105,13 @@ namespace TheAltisProjectAddin
                     {
                         if (split.Length < 2)
                         {
-                            Arma2Net.Utils.Log("ERROR: CARGO.Selectnext ERROR_CARGO_SELECTNEXT_SPLIT_LENGTH");
+                            Arma2Net.Utils.Log("ERROR: CARGO.Selectnext ERROR_CARGO_SELECTNEXT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
                         if (_Result == null)
                         {
-                            Arma2Net.Utils.Log("ERROR: CARGO.Selectnext ERROR_CARGO_SELECTNEXT_INACTIVE");
+                            Arma2Net.Utils.Log("ERROR: CARGO.Selectnext ERROR_CARGO_SELECTNEXT_INACTIVE: Split=" + SplitToString(split));
                             return "ERROR"; // Nur über ERROR beenden, sonst kann die SQF sich nicht beenden.
                         }
 
@@ -106,10 +137,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 6)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_INSERT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_INSERT_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseCargo.Insert(split[2], split[3], split[4], split[5]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_INSERT: Split=" + SplitToString(split));
                             return "ERROR_CARGO_INSERT";
+                        }
                         
                         return "OK";
                     }
@@ -126,11 +162,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 4)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_DELETEALL_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_DELETEALL_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseCargo.DeleteCargoId(split[2], split[3]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_DELETEALL: Split=" + SplitToString(split));
                             return "ERROR_CARGO_DELETEALL";
-
+                        }
                         return "OK";
                     }
                     catch (Exception ex)
@@ -146,10 +186,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 5)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_DELETETYPE_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_DELETETYPE_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseCargo.DeleteCargoType(split[2], split[3], split[4]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_DELETETYPE: Split=" + SplitToString(split));
                             return "ERROR_CARGO_DELETETYPE";
+                        }
 
                         return "OK";
                     }
@@ -166,10 +211,15 @@ namespace TheAltisProjectAddin
                     try
                     {
                         if (split.Length < 3)
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_INIT_SPLIT_LENGTH: Split=" + SplitToString(split));
                             return "ERROR_CARGO_INIT_SPLIT_LENGTH";
-
+                        }
                         if (!_IDatabaseCargo.OpenOrCreateTable(split[2]))
+                        {
+                            Arma2Net.Utils.Log("ERROR_CARGO_INIT: Split=" + SplitToString(split));
                             return "ERROR_CARGO_INIT";
+                        }
 
                         return "OK";
                     }

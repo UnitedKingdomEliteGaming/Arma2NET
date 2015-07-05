@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 
 namespace TheAltisProjectDatabase
 {
+    [Obsolete]
     public class DatabaseItemMsSql : IDatabaseItem, IDatabaseItemGui
     {
         private LogManagerBase _LogManager;
@@ -369,7 +370,7 @@ namespace TheAltisProjectDatabase
             }
         }  
     }
-
+    [Obsolete]
     public class DatabaseCargoMsSql : IDatabaseCargo, IDatabaseCargoGui
     {
         private LogManagerBase _LogManager;

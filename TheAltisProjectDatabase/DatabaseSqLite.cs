@@ -12,11 +12,12 @@ namespace TheAltisProjectDatabase
         private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseItemSQLite(LogManagerBase logManager)
+        public DatabaseItemSQLite(LogManagerBase logManager, string filename)
         {
             _LogManager = logManager;
 
-            _ConnectionString = @"Data Source=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseItem.sqlite") + ";Version=3;UseUTF16Encoding=True;";
+            _ConnectionString = @"Data Source=" + filename + ";Version=3;UseUTF16Encoding=True;";
+            _LogManager.Info(_ConnectionString);
         }
 
         private bool CreateTable(string table)
@@ -398,10 +399,11 @@ namespace TheAltisProjectDatabase
         private LogManagerBase _LogManager;
         private string _ConnectionString;
 
-        public DatabaseCargoSQLite(LogManagerBase logManager)
+        public DatabaseCargoSQLite(LogManagerBase logManager, string filename)
         {
             _LogManager = logManager;
-            _ConnectionString = @"Data Source=" + System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "DatabaseCargo.sqlite") + ";Version=3;UseUTF16Encoding=True;";
+            _ConnectionString = @"Data Source=" + filename + ";Version=3;UseUTF16Encoding=True;";
+            _LogManager.Info(_ConnectionString);
         }
 
         private bool CreateTable(string table)
